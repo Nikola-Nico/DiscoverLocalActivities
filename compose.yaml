@@ -4,9 +4,9 @@ services:
     container_name: postgres_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
-      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+      POSTGRES_USER: discover_local_activities
+      POSTGRES_PASSWORD: discover_user
+      POSTGRES_DB: discover_password
     ports:
       - "5432:5432"
     volumes:
