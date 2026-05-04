@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from db import engine
+from app.db import engine
 
 app = FastAPI(
     title="Discover Local Activities API",

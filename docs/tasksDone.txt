@@ -1,0 +1,42 @@
+Tasks Done by software engineers
+
+
+Nikola Hristov:
+
+Week 1:
+- make git repo
+- make models with sql alchemy
+
+Week 2: 
+- file restructuring and small bug fixes
+- README.md file added 
+
+
+
+
+Viktor Stojanovski:
+
+Week 1:
+- Virtual Enviroment configuration
+- FastAPI 
+- Docker PostgreSQL
+
+Week 2:
+- file restructuring
+
+
+Pavel Atanasovski:
+
+Week 1:
+- SQLAlchemy models
+
+Week 2:
+-Data Cleaning
+
+
+
+
+Nikola Cakar:
+
+
+Matej Talevski:
