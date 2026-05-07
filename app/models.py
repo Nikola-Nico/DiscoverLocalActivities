@@ -1,54 +1,56 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime
 from sqlalchemy.sql import func
 from app.db import Base
 
 
-class User(Base):
+
+
+from sqlalchemy import String, Integer, Float
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
+
+class AuditMixin:
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class User(AuditMixin, Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-
-    email = Column(String, unique=True, nullable=False)
-    name = Column(String)
-    surname = Column(String)
-    destination = Column(String)
-
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
-
-    latitude = Column(Float)
-    longitude = Column(Float)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    surname: Mapped[str] = mapped_column(String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    destination: Mapped[str] = mapped_column(String(255), nullable=False)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
 
 
 
 
 
-class Activity(Base):
+class Activity(AuditMixin, Base):
     __tablename__ = "activities"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    phone_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
+    rating: Mapped[float | None] = mapped_column(Float, nullable=True)
+    user_rating_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
-    name = Column(String)
-    type = Column(String)
-    phone_number = Column(String)
+    name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    type: Mapped[str] = mapped_column(
+        String(100), nullable=False, default="other", index=True
+    )
 
-    latitude = Column(Float)
-    longitude = Column(Float)
 
-    rating = Column(Float)
-    user_rating_count = Column(Integer)
+class WorkingHours(AuditMixin, Base):
+    __tablename__ = "working_hours"
 
-    monday_working_hours = Column(String)
-    tuesday_working_hours = Column(String)
-    wednesday_working_hours = Column(String)
-    thursday_working_hours = Column(String)
-    friday_working_hours = Column(String)
-    saturday_working_hours = Column(String)
-    sunday_working_hours = Column(String)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    activity_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    day_of_week: Mapped[int] = mapped_column(Integer, nullable=False)  # 0=Monday, 6=Sunday
+    open_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # Format: HH:MM
+    close_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # Format: HH:MM
+    is_open_24h: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
