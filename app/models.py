@@ -3,10 +3,9 @@ from sqlalchemy.sql import func
 from app.db import Base
 
 
-
-
 from sqlalchemy import String, Integer, Float
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
+
 
 class AuditMixin:
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -19,13 +18,12 @@ class User(AuditMixin, Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     surname: Mapped[str] = mapped_column(String(100), nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     destination: Mapped[str] = mapped_column(String(255), nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
     longitude: Mapped[float] = mapped_column(Float, nullable=False, index=True)
-
-
-
 
 
 class Activity(AuditMixin, Base):
@@ -49,8 +47,14 @@ class WorkingHours(AuditMixin, Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     activity_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
-    day_of_week: Mapped[int] = mapped_column(Integer, nullable=False)  # 0=Monday, 6=Sunday
-    open_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # Format: HH:MM
-    close_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # Format: HH:MM
+    day_of_week: Mapped[str | None] = mapped_column(
+        String(50), nullable=True
+    )  # 0=Monday, 6=Sunday
+    open_time: Mapped[str | None] = mapped_column(
+        String(5), nullable=True
+    )  # Format: HH:MM
+    close_time: Mapped[str | None] = mapped_column(
+        String(5), nullable=True
+    )  # Format: HH:MM
     is_open_24h: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

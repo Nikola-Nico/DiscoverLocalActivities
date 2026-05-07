@@ -1,7 +1,7 @@
-name,phone_number,latitude,longitude,rating,user_rating_count,category
+name,phone_number,latitude,longitude,rating,user_rating_count,type
 Matto Napoletano,+389 71 343 063,41.9963473,21.4243335,4.7,3580.0,italian_restaurant
 Restaurant Skopski Merak,+389 78 343 630,42.0010096,21.4199187,4.6,5283.0,restaurant
-Mother Teresa Memorial House,+389 2 329 0674,41.99382,21.4308717,4.4,3683.0,unknown
+Mother Teresa Memorial House,+389 2 329 0674,41.99382,21.4308717,4.4,3683.0,other
 Kosmos Kebabchilnica,+389 2 321 1908,42.0025695,21.4384212,4.3,2645.0,restaurant
 Silbo,+389 71 206 205,42.0000927,21.4174075,4.5,4294.0,bakery
 Destan,+389 2 322 4063,41.9997012,21.436087,3.7,3918.0,barbecue_restaurant
@@ -68,7 +68,7 @@ Slatkarnica Palma,+389 70 355 550,42.0039253,21.3872356,4.1,566.0,pastry_shop
 National Restaurant Makedonska Kukja,+389 70 208 519,41.9960241,21.4021817,4.3,1240.0,restaurant
 Chashka Restaurant,+389 71 304 186,41.9953363,21.3986565,4.3,623.0,restaurant
 Martini Cafe,+389 2 306 1127,42.0031844,21.4000883,4.3,1702.0,cafe
-Old Bazaar - Skopje Old Town,,42.0007751,21.4367395,4.5,25902.0,unknown
+Old Bazaar - Skopje Old Town,,42.0007751,21.4367395,4.5,25902.0,other
 Stone Bridge,,41.9969525,21.4330059,4.7,7541.0,bridge
 Archbishop Cathedral „St. Clement of Ohrid”,+389 2 322 7450,41.9985237,21.4264284,4.8,2428.0,church
 „Macedonia“ Square,,41.9962799,21.4318703,4.6,5881.0,tourist_attraction
@@ -139,7 +139,7 @@ Gostilnica Ubac,+389 70 275 594,42.008373,21.367865,4.6,635.0,restaurant
 Kafe igroteka Palavkovci,+389 78 900 888,42.0023185,21.3626846,4.6,69.0,playground
 Gostilnica Jug,+389 78 439 199,42.0066347,21.3723119,4.5,411.0,restaurant
 Скара на кило Кaj 61,+389 72 712 555,42.0103682,21.3739589,4.3,115.0,restaurant
-CERTUS Technical examination and registration of vehicles,+389 78 320 374,42.0085148,21.3823933,4.3,158.0,unknown
+CERTUS Technical examination and registration of vehicles,+389 78 320 374,42.0085148,21.3823933,4.3,158.0,other
 Pizza Gigo,+389 78 413 461,42.0075035,21.3713071,4.5,690.0,pizza_restaurant
 Restaurant Kaskada,+389 70 360 792,42.00377,21.379547,4.3,155.0,restaurant
 Igroteka Kidobar by Kinderlend,+389 71 944 227,42.0107368,21.3706453,4.6,35.0,event_venue

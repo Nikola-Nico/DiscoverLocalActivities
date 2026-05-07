@@ -24,7 +24,7 @@ def preprocess_activities():
         "places/location/longitude": "longitude",
         "places/rating": "rating",
         "places/userRatingCount": "user_rating_count",
-        "places/primaryType": "category",
+        "places/primaryType": "type",
         "places/regularOpeningHours/weekdayDescriptions/0": "monday",
         "places/regularOpeningHours/weekdayDescriptions/1": "tuesday",
         "places/regularOpeningHours/weekdayDescriptions/2": "wednesday",
@@ -44,7 +44,7 @@ def preprocess_activities():
     df["phone_number"] = df["phone_number"].fillna("")
     df["rating"] = df["rating"].fillna(0)
     df["user_rating_count"] = df["user_rating_count"].fillna(0)
-    df["category"] = df["category"].fillna("unknown")
+    df["type"] = df["type"].fillna("other")
 
     working_days = [
         "monday",
