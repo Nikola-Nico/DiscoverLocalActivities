@@ -4,10 +4,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-INPUT_FILE = BASE_DIR / "data" / "cleaned_activities.csv"
+# INPUT_FILE = BASE_DIR / "data" / "cleaned_activities.csv"
 OUTPUT_FILE = BASE_DIR / "data" / "working_hours.csv"
 
 DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
 
 def parse_time(time_str: str) -> str:
     """Convert '8:00 AM' -> '08:00', '10:00 PM' -> '22:00'"""
@@ -22,6 +23,7 @@ def parse_time(time_str: str) -> str:
         hour = 0
     return f"{hour:02d}:{minute:02d}"
 
+
 def parse_day_string(raw: str):
     """
     Returns a list of (open_time, close_time, is_open_24h, is_closed) tuples.
@@ -35,10 +37,24 @@ def parse_day_string(raw: str):
     value = value.strip()
 
     if re.search(r"closed", value, re.IGNORECASE):
-        return [{"open_time": None, "close_time": None, "is_open_24h": False, "is_closed": True}]
+        return [
+            {
+                "open_time": None,
+                "close_time": None,
+                "is_open_24h": False,
+                "is_closed": True,
+            }
+        ]
 
     if re.search(r"open 24 hours", value, re.IGNORECASE):
-        return [{"open_time": "00:00", "close_time": "23:59", "is_open_24h": True, "is_closed": False}]
+        return [
+            {
+                "open_time": "00:00",
+                "close_time": "23:59",
+                "is_open_24h": True,
+                "is_closed": False,
+            }
+        ]
 
     # Split on comma for multiple intervals: "8:00 AM – 12:00 PM, 2:00 PM – 6:00 PM"
     intervals = value.split(",")
@@ -49,16 +65,18 @@ def parse_day_string(raw: str):
             open_time = parse_time(parts[0])
             close_time = parse_time(parts[1])
             if open_time and close_time:
-                results.append({
-                    "open_time": open_time,
-                    "close_time": close_time,
-                    "is_open_24h": False,
-                    "is_closed": False,
-                })
+                results.append(
+                    {
+                        "open_time": open_time,
+                        "close_time": close_time,
+                        "is_open_24h": False,
+                        "is_closed": False,
+                    }
+                )
     return results
 
 
-def build_working_hours():
+def build_working_hours(INPUT_FILE):
     df = pd.read_csv(INPUT_FILE)
 
     rows = []
@@ -67,13 +85,25 @@ def build_working_hours():
             raw = getattr(row, day, "")
             parsed = parse_day_string(raw)
             for entry in parsed:
-                rows.append({
-                    "activity_id": activity_id,
-                    "day_of_week": day,
-                    **entry,
-                })
+                rows.append(
+                    {
+                        "activity_id": activity_id,
+                        "day_of_week": day,
+                        **entry,
+                    }
+                )
 
-    hours_df = pd.DataFrame(rows, columns=["activity_id", "day_of_week", "open_time", "close_time", "is_open_24h", "is_closed"])
+    hours_df = pd.DataFrame(
+        rows,
+        columns=[
+            "activity_id",
+            "day_of_week",
+            "open_time",
+            "close_time",
+            "is_open_24h",
+            "is_closed",
+        ],
+    )
     hours_df.to_csv(OUTPUT_FILE, index=False)
 
     print(f"Working hours rows: {len(hours_df)}")

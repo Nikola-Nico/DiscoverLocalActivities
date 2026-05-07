@@ -62,11 +62,11 @@ def preprocess_activities():
     # Step 6: Save cleaned file
     df.to_csv(OUTPUT_FILE, index=False)
 
-    print("\nCleaned columns:")
-    print(df.columns.tolist())
-    print(f"\nCleaned file created: {OUTPUT_FILE}")
+    # print("\nCleaned columns:")
+    # print(df.columns.tolist())
+    # print(f"\nCleaned file created: {OUTPUT_FILE}")
 
-    pwh.build_working_hours()
+    pwh.build_working_hours(OUTPUT_FILE)
     df = df.drop(columns=working_days)
     df.to_csv(OUTPUT_FILE, index=False)
     print(f"\nFinal cleaned file with working hours created: {OUTPUT_FILE}")
