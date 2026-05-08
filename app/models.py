@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from app.db import Base
 
@@ -46,7 +46,7 @@ class WorkingHours(AuditMixin, Base):
     __tablename__ = "working_hours"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    activity_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    activity_id: Mapped[int] = mapped_column(Integer, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False, index=True)
     day_of_week: Mapped[str | None] = mapped_column(
         String(50), nullable=True
     )  # 0=Monday, 6=Sunday
