@@ -56,5 +56,11 @@ class WorkingHours(AuditMixin, Base):
     close_time: Mapped[str | None] = mapped_column(
         String(5), nullable=True
     )  # Format: HH:MM
+    break_hour_start: Mapped[str | None] = mapped_column(
+        String(5), nullable=True
+    )
+    break_hour_end: Mapped[str | None] = mapped_column(
+        String(5), nullable=True
+    )   # Format: HH:MM-HH:MM
     is_open_24h: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

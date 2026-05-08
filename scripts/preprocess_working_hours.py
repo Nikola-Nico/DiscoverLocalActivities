@@ -26,7 +26,7 @@ def parse_time(time_str: str) -> str:
 
 def parse_day_string(raw: str):
     """
-    Returns a list of (open_time, close_time, is_open_24h, is_closed) tuples.
+    Returns a list of open intervals for a single day.
     Handles: normal hours, Open 24 hours, Closed, multiple intervals, missing.
     """
     if not raw or not isinstance(raw, str) or raw.strip() == "":
@@ -76,6 +76,52 @@ def parse_day_string(raw: str):
     return results
 
 
+def build_day_entry(day: str, intervals: list[dict]) -> dict:
+    if not intervals:
+        return {
+            "day_of_week": day,
+            "open_time": None,
+            "close_time": None,
+            "break_hour_start": None,
+            "break_hour_end": None,
+            "is_open_24h": False,
+            "is_closed": True,
+        }
+
+    if len(intervals) == 1:
+        interval = intervals[0]
+        return {
+            "day_of_week": day,
+            "open_time": interval["open_time"],
+            "close_time": interval["close_time"],
+            "break_hour_start": None,
+            "break_hour_end": None,
+            "is_open_24h": interval["is_open_24h"],
+            "is_closed": interval["is_closed"],
+        }
+
+    open_time = intervals[0]["open_time"]
+    close_time = intervals[-1]["close_time"]
+
+    break_hour_start = None
+    break_hour_end = None
+    for previous_interval, next_interval in zip(intervals, intervals[1:]):
+        if previous_interval["close_time"] and next_interval["open_time"]:
+            break_hour_start = previous_interval["close_time"]
+            break_hour_end = next_interval["open_time"]
+            break
+
+    return {
+        "day_of_week": day,
+        "open_time": open_time,
+        "close_time": close_time,
+        "break_hour_start": break_hour_start,
+        "break_hour_end": break_hour_end,
+        "is_open_24h": False,
+        "is_closed": False,
+    }
+
+
 def build_working_hours(INPUT_FILE):
     df = pd.read_csv(INPUT_FILE)
 
@@ -84,14 +130,12 @@ def build_working_hours(INPUT_FILE):
         for day in DAYS:
             raw = getattr(row, day, "")
             parsed = parse_day_string(raw)
-            for entry in parsed:
-                rows.append(
-                    {
-                        "activity_id": activity_id,
-                        "day_of_week": day,
-                        **entry,
-                    }
-                )
+            rows.append(
+                {
+                    "activity_id": activity_id,
+                    **build_day_entry(day, parsed),
+                }
+            )
 
     hours_df = pd.DataFrame(
         rows,
@@ -100,6 +144,8 @@ def build_working_hours(INPUT_FILE):
             "day_of_week",
             "open_time",
             "close_time",
+            "break_hour_start",
+            "break_hour_end",
             "is_open_24h",
             "is_closed",
         ],
