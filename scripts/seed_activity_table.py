@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 from pathlib import Path
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -16,16 +16,22 @@ working_hours_path = BASE_DIR / "data" / "working_hours.csv"
 activity_df = pd.read_csv(activity_path)
 working_hours_df = pd.read_csv(working_hours_path)
 
+# Make seeding rerunnable: clear existing rows and restart serial IDs.
+# CASCADE removes dependent working_hours rows when truncating activities.
+with engine.begin() as conn:
+    conn.execute(text("TRUNCATE TABLE working_hours RESTART IDENTITY"))
+    conn.execute(text("TRUNCATE TABLE activities RESTART IDENTITY CASCADE"))
+
 activity_df.to_sql(
     "activities",
     engine,
-    if_exists="append",   # append data
+    if_exists="append",
     index=False
 )
 
 working_hours_df.to_sql(
     "working_hours",
     engine,
-    if_exists="append",   # append data
+    if_exists="append",
     index=False
 )
