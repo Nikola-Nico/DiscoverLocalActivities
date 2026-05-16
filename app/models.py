@@ -1,10 +1,8 @@
 from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from app.db import Base
 
-
-from sqlalchemy import String, Integer, Float
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 
 class AuditMixin:
