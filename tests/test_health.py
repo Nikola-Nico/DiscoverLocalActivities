@@ -18,8 +18,8 @@ def test_health():
 
 def test_db_health():
     r = client.get("/health/db")
-    # DB may or may not be available in the environment running tests.
-    # Accept either healthy (200) or service unavailable (503) and report accordingly.
     assert r.status_code in (200, 503)
     if r.status_code == 200:
         assert r.json().get("status") == "ok"
+    else:
+        assert r.json().get("detail") == "database is not on"

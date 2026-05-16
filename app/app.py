@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from sqlalchemy import text, inspect
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from app.db import Base, engine
 from app.models import User, Activity
 
@@ -33,6 +33,8 @@ async def db_health_check():
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return {"status": "ok"}
+    except OperationalError:
+        raise HTTPException(status_code=503, detail="database is not on")
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
 
