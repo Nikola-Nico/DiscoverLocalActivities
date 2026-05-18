@@ -1,28 +1,18 @@
 import math
-from fastapi import APIRouter, Query, HTTPException, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import List, Optional
+
+from sqlalchemy import select, func
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.schemas import UpdateUser, UserCreate, UserRead
+from app.models import User
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
-
-# --- Pydantic Schemas ---
-class UserBase(BaseModel):
-    username: str
-    email: str
-    latitude: float = Field(..., ge=-90.0, le=90.0)
-    longitude: float = Field(..., ge=-180.0, le=180.0)
-
-class UserCreate(UserBase):
-    password: str
-
-class UserResponse(UserBase):
-    id: int
-
-    class Config:
-        from_attributes = True
 
 # --- Haversine Helper Function ---
 def calculate_haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -46,8 +36,9 @@ def calculate_haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> f
 
 # --- Endpoints ---
 
-@router.get("", response_model=List[UserResponse])
+@router.get("", response_model=List[UserRead])
 async def get_users(
+    db: Session = Depends(get_db),
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of returned users"),
     latitude: Optional[float] = Query(default=None, ge=-90.0, le=90.0, description="Latitude for geo filtering"),
     longitude: Optional[float] = Query(default=None, ge=-180.0, le=180.0, description="Longitude for geo filtering"),
@@ -61,29 +52,50 @@ async def get_users(
             detail="To filter by location, you must provide latitude, longitude, AND radius_km."
         )
 
-    # TODO: Fetch users from DB (applying limit)
-    # mock_users_from_db = [...] 
-    
-    # If geo filtering is requested, apply the Haversine formula
-    # Note: For large datasets, doing this in-memory is inefficient. 
-    # Consider using PostGIS or a bounding box query in production!
+    query = select(User)
+    result = db.execute(query)
+    users = result.scalars().all()
+
     if all(geo_params):
-        filtered_users = []
-        for user in mock_users_from_db:
-            distance = calculate_haversine(latitude, longitude, user.latitude, user.longitude)
-            if distance <= radius_km:
-                filtered_users.append(user)
-        return filtered_users[:limit]
+        users = [
+            u for u in users
+            if calculate_haversine(latitude, longitude, u.latitude, u.longitude) <= radius_km
+        ]
 
-    return [] # Return unfiltered/limited users here
+    return users[:limit]
 
-@router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserCreate):
-    # TODO: Hash password and save user to database
-    return {**user.model_dump(exclude={"password"}), "id": 1}
 
-@router.put("/{user_id}", response_model=UserResponse)
-async def update_user(user_id: int, user: UserCreate):
-    # TODO: Find user by user_id, update fields, and save
-    # If not found: raise HTTPException(status_code=404, detail="User not found")
-    return {**user.model_dump(exclude={"password"}), "id": user_id}
+@router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.execute(
+        select(User).where(User.email == user.email)
+    ).scalar_one_or_none()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A user with this email already exists.",
+        )
+
+    db_user = User(**user.model_dump())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
+@router.put("/{user_id}", response_model=UserRead)
+async def update_user(user_id: int, user: UpdateUser, db: Session = Depends(get_db)):
+    db_user = db.execute(
+        select(User).where(User.id == user_id)
+    ).scalar_one_or_none()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    for field, value in user.model_dump(exclude_unset=True).items():
+        setattr(db_user, field, value)
+
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+    

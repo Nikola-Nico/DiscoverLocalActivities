@@ -4,13 +4,17 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+# ─────────────────────────────────────────────
+#  USER SCHEMAS
+# ─────────────────────────────────────────────
+
 class UserBase(BaseModel):
     name: str
     surname: str
     email: str
     destination: str
-    latitude: float
-    longitude: float
+    latitude: float = Field(..., ge=-90.0, le=90.0)
+    longitude: float = Field(..., ge=-180.0, le=180.0)
 
 
 class UserCreate(UserBase):
@@ -30,31 +34,21 @@ class UpdateUser(BaseModel):
     surname: Optional[str] = None
     email: Optional[str] = None
     destination: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: Optional[float] = Field(default=None, ge=-90.0, le=90.0)
+    longitude: Optional[float] = Field(default=None, ge=-180.0, le=180.0)
 
 
-class ActivityBase(BaseModel):
-    phone_number: Optional[str] = None
-    latitude: float
-    longitude: float
-    rating: Optional[float] = None
-    user_rating_count: int = 0
-    name: str
-    type: str = "other"
-
-
-class ActivityCreate(ActivityBase):
-    pass
-
+# ─────────────────────────────────────────────
+#  WORKING HOURS SCHEMAS
+# ─────────────────────────────────────────────
 
 class WorkingHoursBase(BaseModel):
     activity_id: int
-    day_of_week: Optional[str] = None
-    open_time: Optional[str] = None
-    close_time: Optional[str] = None
-    break_hour_start: Optional[str] = None
-    break_hour_end: Optional[str] = None
+    day_of_week: Optional[str] = None       # e.g. "monday", "tuesday", ...
+    open_time: Optional[str] = None         # Format: HH:MM
+    close_time: Optional[str] = None        # Format: HH:MM
+    break_hour_start: Optional[str] = None  # Format: HH:MM
+    break_hour_end: Optional[str] = None    # Format: HH:MM
     is_open_24h: bool = False
     is_closed: bool = False
 
@@ -71,6 +65,24 @@ class WorkingHoursRead(WorkingHoursBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+# ─────────────────────────────────────────────
+#  ACTIVITY SCHEMAS
+# ─────────────────────────────────────────────
+
+class ActivityBase(BaseModel):
+    name: str
+    type: str = "other"
+    phone_number: Optional[str] = None
+    latitude: float = Field(..., ge=-90.0, le=90.0)
+    longitude: float = Field(..., ge=-180.0, le=180.0)
+    rating: Optional[float] = Field(default=None, ge=0.0, le=5.0)
+    user_rating_count: int = Field(default=0, ge=0)
+
+
+class ActivityCreate(ActivityBase):
+    pass
+
+
 class ActivityRead(ActivityBase):
     id: int
     created_at: Optional[datetime] = None
@@ -81,15 +93,15 @@ class ActivityRead(ActivityBase):
 
 
 class ActivityWithHours(ActivityRead):
+    """Alias for ActivityRead – includes nested working_hours."""
     pass
 
 
 class UpdateActivity(BaseModel):
-    phone_number: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    rating: Optional[float] = None
-    user_rating_count: Optional[int] = None
     name: Optional[str] = None
     type: Optional[str] = None
-
+    phone_number: Optional[str] = None
+    latitude: Optional[float] = Field(default=None, ge=-90.0, le=90.0)
+    longitude: Optional[float] = Field(default=None, ge=-180.0, le=180.0)
+    rating: Optional[float] = Field(default=None, ge=0.0, le=5.0)
+    user_rating_count: Optional[int] = Field(default=None, ge=0)

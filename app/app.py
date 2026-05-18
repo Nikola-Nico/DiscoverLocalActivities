@@ -4,6 +4,7 @@ from sqlalchemy import text, inspect
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from app.db import Base, engine
 from app.models import User, Activity
+from app.routers import activities_backup, users
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -18,8 +19,6 @@ app = FastAPI(
     description="Backend service for discovering local activities.",
     # lifespan=lifespan
 )
-app.include_router(activities.router)
-app.include_router(users.router)
 
 @app.get("/")
 async def read_root() -> dict[str, str]:
@@ -43,3 +42,6 @@ async def db_health_check():
 @app.get("/debug/tables")
 async def list_tables():
     return inspect(engine).get_table_names()
+
+app.include_router(activities_backup.router)
+app.include_router(users.router)
