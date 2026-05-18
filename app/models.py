@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.sql import func
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from app.db import Base
 
 
@@ -38,6 +38,10 @@ class Activity(AuditMixin, Base):
     type: Mapped[str] = mapped_column(
         String(100), nullable=False, default="other", index=True
     )
+    working_hours: Mapped[list["WorkingHours"]] = relationship(
+        back_populates="activity",
+        cascade="all, delete-orphan",
+    )
 
 
 class WorkingHours(AuditMixin, Base):
@@ -62,3 +66,4 @@ class WorkingHours(AuditMixin, Base):
     )   # Format: HH:MM-HH:MM
     is_open_24h: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    activity: Mapped[Activity] = relationship(back_populates="working_hours")

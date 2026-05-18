@@ -4,7 +4,7 @@ from sqlalchemy import text, inspect
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from app.db import Base, engine
 from app.models import User, Activity
-from app.routers import activities_backup, users
+from app.routers import activities, users
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -43,5 +43,5 @@ async def db_health_check():
 async def list_tables():
     return inspect(engine).get_table_names()
 
-app.include_router(activities_backup.router)
+app.include_router(activities.router)
 app.include_router(users.router)
