@@ -18,6 +18,8 @@ app = FastAPI(
     description="Backend service for discovering local activities.",
     # lifespan=lifespan
 )
+app.include_router(activities.router)
+app.include_router(users.router)
 
 @app.get("/")
 async def read_root() -> dict[str, str]:
