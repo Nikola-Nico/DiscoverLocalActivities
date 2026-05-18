@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.get("", response_model=List[ActivityRead])
 async def get_activities(
-    db: Session = Depends(get_db),
+    
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of returned activities"),
     category: Optional[str] = Query(default=None, description="Filter by activity category"),
     min_rating: Optional[float] = Query(default=None, ge=0.0, le=5.0, description="Filter by minimum rating"),
