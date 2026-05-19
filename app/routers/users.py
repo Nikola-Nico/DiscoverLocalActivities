@@ -64,6 +64,15 @@ async def get_users(
 
     return users[:limit]
 
+@router.get("/{user_id}", response_model=UserRead)
+async def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.execute(
+        select(User).where(User.id == user_id)
+    ).scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 
 @router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):

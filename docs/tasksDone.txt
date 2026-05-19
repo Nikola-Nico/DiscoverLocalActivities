@@ -15,6 +15,10 @@ Week 3:
 - Updated models for tables
 - Added activities and working hours data script
 
+Week 4:
+- Added users and activities endpoints
+- GET,POST,PUT requests for users and activities endpoint
+
 
 Viktor Stojanovski:
 
@@ -31,6 +35,10 @@ Week 3:
 - Added activities and working hours data script
 - Quality assurance
 
+Week 4:
+- QOL changes in server initialization and rollback
+- Bugfixes, validations and improvements in endpoints
+
 Pavel Tanaskovski:
 
 Week 1:
@@ -44,12 +52,22 @@ Week 3:
 - Data cleaning script
 - Added activities and working hours data script
 
+Week 4:
+- Database Session handling and postgresql connection
+- Testing endpoints and data connection
+
 Nikola Cakar:
 
 Week 3:
 - Dummy users script creation
 
+Week 4:
+- GET,POST,PUT requests for working_hours
+
 Matej Talevski:
 
 Week 3:
 - Dummy users script creation
+
+Week 4:
+- Pydantic validation models
