@@ -64,6 +64,15 @@ class WorkingHoursRead(WorkingHoursBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+class UpdateWorkingHours(BaseModel):
+    day_of_week: Optional[str] = None
+    open_time: Optional[str] = None         # Format: HH:MM
+    close_time: Optional[str] = None        # Format: HH:MM
+    break_hour_start: Optional[str] = None  # Format: HH:MM
+    break_hour_end: Optional[str] = None    # Format: HH:MM
+    is_open_24h: bool = False
+    is_closed: Optional[bool] = None
+
 
 # ─────────────────────────────────────────────
 #  ACTIVITY SCHEMAS
@@ -106,27 +115,3 @@ class UpdateActivity(BaseModel):
     rating: Optional[float] = Field(default=None, ge=0.0, le=5.0)
     user_rating_count: Optional[int] = Field(default=None, ge=0)
 
-
-
-class WorkingHoursCreate(BaseModel):
-    activity_id: int
-    day_of_week: str       # e.g. "monday"
-    open_time: Optional[time] = None
-    close_time: Optional[time] = None
-    is_closed: bool = False
-
-class UpdateWorkingHours(BaseModel):
-    day_of_week: Optional[str] = None
-    open_time: Optional[time] = None
-    close_time: Optional[time] = None
-    is_closed: Optional[bool] = None
-
-class WorkingHoursRead(BaseModel):
-    id: int
-    activity_id: int
-    day_of_week: Optional[str]
-    open_time: Optional[time]
-    close_time: Optional[time]
-    is_closed: bool
-
-    model_config = ConfigDict(from_attributes=True)

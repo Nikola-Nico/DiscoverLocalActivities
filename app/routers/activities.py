@@ -56,6 +56,17 @@ async def get_activities(
     return activities[:limit]
 
 
+@router.get("/{activity_id}", response_model=ActivityRead)
+async def get_activity(activity_id: int, db: Session = Depends(get_db)):
+    activity = db.execute(
+        select(Activity)
+        .options(selectinload(Activity.working_hours))
+        .where(Activity.id == activity_id)
+    ).scalar_one_or_none()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    return activity
+
 
 # Create endpoint for activities
 @router.post("", response_model=ActivityRead, status_code=status.HTTP_201_CREATED)

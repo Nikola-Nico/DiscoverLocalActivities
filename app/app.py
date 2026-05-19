@@ -4,8 +4,7 @@ from sqlalchemy import text, inspect
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from app.db import Base, engine
 from app.models import User, Activity
-from app.routers import activities, users
-from app.routers import working_hours
+from app.routers import activities, users, working_hours
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
