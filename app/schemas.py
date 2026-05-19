@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-
+from datetime import time
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -105,3 +105,28 @@ class UpdateActivity(BaseModel):
     longitude: Optional[float] = Field(default=None, ge=-180.0, le=180.0)
     rating: Optional[float] = Field(default=None, ge=0.0, le=5.0)
     user_rating_count: Optional[int] = Field(default=None, ge=0)
+
+
+
+class WorkingHoursCreate(BaseModel):
+    activity_id: int
+    day_of_week: str       # e.g. "monday"
+    open_time: Optional[time] = None
+    close_time: Optional[time] = None
+    is_closed: bool = False
+
+class UpdateWorkingHours(BaseModel):
+    day_of_week: Optional[str] = None
+    open_time: Optional[time] = None
+    close_time: Optional[time] = None
+    is_closed: Optional[bool] = None
+
+class WorkingHoursRead(BaseModel):
+    id: int
+    activity_id: int
+    day_of_week: Optional[str]
+    open_time: Optional[time]
+    close_time: Optional[time]
+    is_closed: bool
+
+    model_config = ConfigDict(from_attributes=True)

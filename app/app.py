@@ -5,6 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from app.db import Base, engine
 from app.models import User, Activity
 from app.routers import activities, users
+from app.routers import working_hours
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -45,3 +46,4 @@ async def list_tables():
 
 app.include_router(activities.router)
 app.include_router(users.router)
+app.include_router(working_hours.router)
