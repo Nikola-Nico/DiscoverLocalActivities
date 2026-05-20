@@ -1070,17 +1070,3 @@ activity_id,day_of_week,open_time,close_time,break_hour_start,break_hour_end,is_
 153,friday,08:00,21:00,,,False,False
 153,saturday,08:00,19:30,,,False,False
 153,sunday,,,,,False,True
-154,monday,08:00,20:00,12:00,14:00,False,False
-154,tuesday,08:00,20:00,,,False,False
-154,wednesday,08:00,20:00,,,False,False
-154,thursday,08:00,20:00,,,False,False
-154,friday,08:00,20:00,,,False,False
-154,saturday,08:00,20:00,,,False,False
-154,sunday,,,,,False,True
-155,monday,08:00,20:00,12:00,14:00,False,False
-155,tuesday,08:00,20:00,,,False,False
-155,wednesday,08:00,20:00,,,False,False
-155,thursday,08:00,20:00,,,False,False
-155,friday,08:00,20:00,,,False,False
-155,saturday,08:00,20:00,,,False,False
-155,sunday,,,,,False,True
