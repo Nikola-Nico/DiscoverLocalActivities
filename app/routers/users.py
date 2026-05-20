@@ -1,4 +1,3 @@
-import math
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import List, Optional
 
@@ -8,34 +7,19 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.schemas import UpdateUser, UserCreate, UserRead
 from app.models import User
+from app.helper.calculate_haversine import calculate_haversine
+
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
 
-# --- Haversine Helper Function ---
-def calculate_haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """
-    Calculates the great-circle distance between two points 
-    on the Earth's surface in kilometers.
-    """
-    # Earth's radius in kilometers
-    R = 6371.0 
-
-    # Convert degrees to radians
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    delta_phi = math.radians(lat2 - lat1)
-    delta_lambda = math.radians(lon2 - lon1)
-
-    # Haversine formula
-    a = math.sin(delta_phi / 2.0)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2.0)**2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    
-    return R * c
 
 # --- Endpoints ---
 
+
+# Get endpoint to retrieve a list of users with optional geo filtering and pagination
 @router.get("", response_model=List[UserRead])
 async def get_users(
     db: Session = Depends(get_db),
@@ -64,6 +48,7 @@ async def get_users(
 
     return users[:limit]
 
+# Get endpoint to retrieve a user by ID with error handling for non-existent users
 @router.get("/{user_id}", response_model=UserRead)
 async def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.execute(
@@ -74,6 +59,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
+# Post endpoint to create a new user with email uniqueness validation
 @router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.execute(
@@ -92,6 +78,8 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     return db_user
 
+# Put endpoint to update an existing user with error handling for non-existent users 
+# and partial updates
 @router.put("/{user_id}", response_model=UserRead)
 async def update_user(user_id: int, user: UpdateUser, db: Session = Depends(get_db)):
     db_user = db.execute(
