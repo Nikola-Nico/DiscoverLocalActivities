@@ -20,17 +20,51 @@ A FastAPI-based backend application for discovering nearby activities. This proj
 ```
 DiscoverLocalActivities/
 │
+├── .venv/
 ├── app/
 │   ├── __init__.py
+|   ├── helper/        # Helper functions
+|   |   ├── calculate_harvesine.py
+|   |   ├── constants.py
+|   |   ├── filter_nearby_activities.py
+|   |   ├── recommendation_helper.py
+|   ├── routers/       # Endpoints
+|   |   ├── activities.py
+|   |   ├── recommendations.py
+|   |   ├── users.py
+|   |   ├── working_hours.py
+|   ├── _init_.py
 │   ├── app.py          # FastAPI entry point
 │   ├── db.py           # Database connection
 │   ├── models.py       # SQLAlchemy models
 │   ├── schemas.py      # Pydantic schemas (optional)
-│   ├── crud.py         # Database operations (optional)
-│
-├── .venv/
+├── data/               # Raw and processed data
+|   ├── cleaned_activities.csv
+|   ├── unique_activities copy.tsv
+|   ├── unique_activities.tsv
+|   ├── working_hours.csv
+├── docs/               # Task documentations and presentations
+|   ├── tasksDone.txt
+|   ├── week4-presentation.txt
+├── frontend            
+├── init.sql            
+├── scripts/            
+|   ├── generate_dummy_users.py
+|   ├── preprocess_activities_tsv.py
+|   ├── preprocess_working_hours.py
+|   ├── seed_activity_table.py
+├── tests/
+|   ├── test.health.py
+|   ├── test_recommendations.py
+|   ├── test_working_hours_post.py
+├── .gitignore
+├── compose.yaml
+├── conftest.py
+├── main.py
+├── pyproject.toml
+├── README.md
 ├── requirements.txt
-└── README.md
+└── uv.lock
 ```
 
 ---
