@@ -18,7 +18,7 @@ app = FastAPI(
     title="Discover Local Activities API",
     version="0.1.0",
     description="Backend service for discovering local activities.",
-    # lifespan=lifespan
+    # lifespan=lifespan``
 )
 
 @app.get("/")

@@ -63,7 +63,6 @@ CONTEXT_KEYWORDS: dict[str, set[str]] = {
         "bakery",
         "barbecue_restaurant",
         "bistro",
-        "cafe",
         "diner",
         "fast_food_restaurant",
         "italian_restaurant",
