@@ -36,16 +36,20 @@ def get_popularity_score(user_rating_count):
     return min(score, 1.0)
 
 # Category relevance: 1 if activity type matches context keywords, else 0
-def get_category_relevance(activity_type, context):
-    allowed_types = CONTEXT_KEYWORDS.get((context or "").lower(), set())
+def get_category_relevance(activity_type, context: str):
+    allowed_types = get_allowed_context_types(context)
     normalized_type = (activity_type or "").lower()
     if normalized_type in allowed_types:
         return 1.0
     return 0.0
 
 # Get allowed activity types based on context keywords
-def get_allowed_context_types(context: str | None) -> set[str]:
-    return CONTEXT_KEYWORDS.get((context or "").lower(), set())
+def get_allowed_context_types(context: str) -> set[str]:
+    normalized_context = context.lower()
+    allowed_types = CONTEXT_KEYWORDS.get(normalized_context)
+    if allowed_types is None:
+        raise ValueError(f"Unknown recommendation context: {context}")
+    return allowed_types
 
 # Calculate overall recommendation score using weighted average of 
 # different factors
@@ -131,7 +135,7 @@ def build_recommendation_result(
     activity: Activity,
     distance_km: float,
     radius_km: float,
-    context: str | None,
+    context: str,
     response_timestamp: str,
 ) -> dict:
     distance_score = get_distance_score(distance_km, radius_km)
@@ -160,8 +164,7 @@ def build_recommendation_result(
         "response_timestamp": response_timestamp,
     }
 
-    if context is not None:
-        result["context"] = context
+    result["context"] = context
 
     return result
 
@@ -172,7 +175,7 @@ def rank_nearby_recommendations(
     user_lat: float,
     user_lon: float,
     radius_km: float,
-    context: str | None,
+    context: str,
     response_timestamp: str | None = None,
 ) -> tuple[list[dict], str]:
     from app.helper.calculate_haversine import calculate_haversine
@@ -187,7 +190,7 @@ def rank_nearby_recommendations(
             continue
         if not is_activity_open(activity, timestamp):
             continue
-        if allowed_types and (activity.type or "").lower() not in allowed_types:
+        if (activity.type or "").lower() not in allowed_types:
             continue
         ranked.append(
             build_recommendation_result(

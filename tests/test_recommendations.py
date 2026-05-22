@@ -71,7 +71,7 @@ def _create_open_activity(client: TestClient, name: str, activity_type: str, lat
     return activity_id
 
 
-def test_recommendations_hide_context_when_not_provided(client: TestClient) -> None:
+def test_recommendations_default_context_when_not_provided(client: TestClient) -> None:
     _create_open_activity(client, "Book Store API", "shopping_mall", 45.815, 15.981)
     _create_open_activity(client, "Restaurant API", "restaurant", 45.816, 15.982)
 
@@ -79,8 +79,8 @@ def test_recommendations_hide_context_when_not_provided(client: TestClient) -> N
 
     assert response.status_code == 200
     payload = response.json()
-    assert "context" not in payload
-    assert all("context" not in activity for activity in payload["activities"])
+    assert payload["context"] == "lunch"
+    assert all(activity["context"] == "lunch" for activity in payload["activities"])
 
 
 def test_recommendations_show_context_when_provided(client: TestClient) -> None:
@@ -93,3 +93,12 @@ def test_recommendations_show_context_when_provided(client: TestClient) -> None:
     payload = response.json()
     assert payload["context"] == "lunch"
     assert all(activity["context"] == "lunch" for activity in payload["activities"])
+
+
+def test_recommendations_reject_invalid_context(client: TestClient) -> None:
+    _create_open_activity(client, "Book Store API", "shopping_mall", 45.815, 15.981)
+
+    response = client.get("/recommendations?lat=45.815&lon=15.981&radius_km=5&context=invalid")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Unknown recommendation context: invalid"
