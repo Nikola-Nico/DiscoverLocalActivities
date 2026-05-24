@@ -24,7 +24,9 @@ LAST_NAMES = [
 
 DOMAINS = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "proton.me"]
 
-DESTINATION = {"destination": "Skopje", "latitude": 41.9981, "longitude": 21.4254}
+DESTINATION = {"destination": "Skopje"}
+LATITUDE_RANGE = (41.979054, 42.016448)
+LONGITUDE_RANGE = (21.406731, 21.44377)
 
 
 def fake_email(first: str, last: str, uid: int) -> str:
@@ -35,16 +37,16 @@ def fake_email(first: str, last: str, uid: int) -> str:
 def build_user(uid: int) -> dict:
     first = random.choice(FIRST_NAMES)
     last = random.choice(LAST_NAMES)
-    lat_jitter = random.uniform(-0.02, 0.02)
-    lon_jitter = random.uniform(-0.02, 0.02)
+    latitude = random.uniform(*LATITUDE_RANGE)
+    longitude = random.uniform(*LONGITUDE_RANGE)
 
     return {
         "name": first,
         "surname": last,
         "email": fake_email(first, last, uid),
         "destination": DESTINATION["destination"],
-        "latitude": round(DESTINATION["latitude"] + lat_jitter, 6),
-        "longitude": round(DESTINATION["longitude"] + lon_jitter, 6),
+        "latitude": round(latitude, 6),
+        "longitude": round(longitude, 6),
     }
 
 

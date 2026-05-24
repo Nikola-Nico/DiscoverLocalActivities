@@ -66,10 +66,10 @@ def get_category_relevance(activity_type, context: str):
 
 # Get ordered activity types based on context keywords
 def get_context_activity_types(context: str) -> list[str]:
-    if context.lower() == "general":
-        return list(ACTIVITY_TYPES)
     normalized_context = context.lower()
-    # if normalized_context == "general":
+    if normalized_context == "general":
+        return list(ACTIVITY_TYPES)
+    
     context_types = CONTEXT_ACTIVITY_TYPES.get(normalized_context)
     if context_types is None:
         raise ValueError(f"Unknown recommendation context: {context}")
