@@ -3,6 +3,7 @@ from datetime import datetime
 
 from app.models import Activity
 from app.helper.constants import (
+    ACTIVITY_TYPES,
     CONTEXT_ACTIVITY_TYPES,
     MIN_CATEGORY_RELEVANCE,
     _DAY_ALIASES,
@@ -46,6 +47,9 @@ def get_popularity_score(user_rating_count):
 
 # Category relevance: rank activity type within the context list.
 def get_category_relevance(activity_type, context: str):
+    if context.lower() == "general":
+        return 1.0
+    
     context_types = get_context_activity_types(context)
     normalized_type = (activity_type or "").lower()
     if normalized_type not in context_types:
@@ -62,7 +66,10 @@ def get_category_relevance(activity_type, context: str):
 
 # Get ordered activity types based on context keywords
 def get_context_activity_types(context: str) -> list[str]:
+    if context.lower() == "general":
+        return list(ACTIVITY_TYPES)
     normalized_context = context.lower()
+    # if normalized_context == "general":
     context_types = CONTEXT_ACTIVITY_TYPES.get(normalized_context)
     if context_types is None:
         raise ValueError(f"Unknown recommendation context: {context}")
@@ -212,12 +219,11 @@ def rank_nearby_recommendations(
     user_lon: float,
     radius_km: float,
     context: str,
-    response_timestamp: str | None = None,
 ) -> tuple[list[dict], str]:
     from app.helper.calculate_haversine import calculate_haversine
 
     timestamp = (
-        get_response_timestamp() if response_timestamp is None else response_timestamp
+        get_response_timestamp()
     )
     allowed_types = get_allowed_context_types(context)
 

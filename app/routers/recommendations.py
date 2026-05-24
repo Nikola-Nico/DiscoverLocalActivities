@@ -12,9 +12,6 @@ from app.helper.recommendation_handler import rank_nearby_recommendations
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 
-def _build_recommendation_response(base_response: dict) -> dict:
-    return base_response
-
 
 # --- Endpoints ---
 
@@ -24,7 +21,7 @@ def get_recommendations_by_coords(
     lat: float = Query(..., ge=-90, le=90, description="User latitude"),
     lon: float = Query(..., ge=-180, le=180, description="User longitude"),
     radius_km: float = Query(1.0, gt=0, description="Search radius in km"),
-    context: str = Query("lunch", description="Recommendation context"),
+    context: str = Query("general", description="Recommendation context"),
     db: Session = Depends(get_db),
 ):
     activities = (
@@ -42,8 +39,7 @@ def get_recommendations_by_coords(
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return _build_recommendation_response(
-        {
+    return {
             "user_location": {"latitude": lat, "longitude": lon},
             "radius_km": radius_km,
             "context": context,
@@ -51,7 +47,7 @@ def get_recommendations_by_coords(
             "results_count": len(nearby),
             "activities": nearby,
         }
-    )
+    
 
 
 # recommendations based on user id, using user's stored location to find nearby activities
@@ -59,7 +55,7 @@ def get_recommendations_by_coords(
 def get_recommendations_by_user(
     user_id: int,
     radius_km: float = Query(1.0, gt=0, description="Search radius in km"),
-    context: str = Query("lunch", description="Recommendation context"),
+    context: str = Query("general", description="Recommendation context"),
     db: Session = Depends(get_db),
 ):
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
@@ -82,8 +78,7 @@ def get_recommendations_by_user(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    return _build_recommendation_response(
-        {
+    return {
             "user_id": user_id,
             "user_location": {"latitude": user.latitude, "longitude": user.longitude},
             "radius_km": radius_km,
@@ -92,5 +87,4 @@ def get_recommendations_by_user(
             "results_count": len(nearby),
             "activities": nearby,
         }
-    )
 
