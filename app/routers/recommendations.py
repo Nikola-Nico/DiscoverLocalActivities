@@ -18,6 +18,7 @@ def _build_recommendation_response(base_response: dict) -> dict:
 
 # --- Endpoints ---
 
+
 @router.get("")
 def get_recommendations_by_coords(
     lat: float = Query(..., ge=-90, le=90, description="User latitude"),
@@ -26,9 +27,11 @@ def get_recommendations_by_coords(
     context: str = Query("lunch", description="Recommendation context"),
     db: Session = Depends(get_db),
 ):
-    activities = db.execute(
-        select(Activity).options(selectinload(Activity.working_hours))
-    ).scalars().all()
+    activities = (
+        db.execute(select(Activity).options(selectinload(Activity.working_hours)))
+        .scalars()
+        .all()
+    )
     try:
         nearby, response_timestamp = rank_nearby_recommendations(
             activities,
@@ -39,14 +42,17 @@ def get_recommendations_by_coords(
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return _build_recommendation_response({
-        "user_location": {"latitude": lat, "longitude": lon},
-        "radius_km": radius_km,
-        "context": context,
-        "response_timestamp": response_timestamp,
-        "results_count": len(nearby),
-        "activities": nearby,
-    })
+    return _build_recommendation_response(
+        {
+            "user_location": {"latitude": lat, "longitude": lon},
+            "radius_km": radius_km,
+            "context": context,
+            "response_timestamp": response_timestamp,
+            "results_count": len(nearby),
+            "activities": nearby,
+        }
+    )
+
 
 # recommendations based on user id, using user's stored location to find nearby activities
 @router.get("/{user_id}")
@@ -60,9 +66,11 @@ def get_recommendations_by_user(
     if not user:
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
 
-    activities = db.execute(
-        select(Activity).options(selectinload(Activity.working_hours))
-    ).scalars().all()
+    activities = (
+        db.execute(select(Activity).options(selectinload(Activity.working_hours)))
+        .scalars()
+        .all()
+    )
     try:
         nearby, response_timestamp = rank_nearby_recommendations(
             activities,
@@ -74,12 +82,15 @@ def get_recommendations_by_user(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    return _build_recommendation_response({
-        "user_id": user_id,
-        "user_location": {"latitude": user.latitude, "longitude": user.longitude},
-        "radius_km": radius_km,
-        "context": context,
-        "response_timestamp": response_timestamp,
-        "results_count": len(nearby),
-        "activities": nearby,
-    })
+    return _build_recommendation_response(
+        {
+            "user_id": user_id,
+            "user_location": {"latitude": user.latitude, "longitude": user.longitude},
+            "radius_km": radius_km,
+            "context": context,
+            "response_timestamp": response_timestamp,
+            "results_count": len(nearby),
+            "activities": nearby,
+        }
+    )
+

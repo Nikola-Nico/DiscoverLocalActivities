@@ -1,4 +1,3 @@
-
 ACTIVITY_TYPES: set[str] = {
     "art_gallery",
     "art_museum",
@@ -42,92 +41,106 @@ ACTIVITY_TYPES: set[str] = {
     "wine_bar",
 }
 
-CONTEXT_KEYWORDS: dict[str, set[str]] = {
-    "breakfast": {
+MIN_CATEGORY_RELEVANCE: float = 0.3
+
+
+# For future improvement, we can: 
+# - Consider adding more context keywords and activity types based on user feedback and data analysis.
+# - Implement a more dynamic way to update context-activity mappings without code changes, 
+# such as using a database or configuration file, or even leveraging machine learning to 
+# learn associations from user interactions and preferences.
+CONTEXT_ACTIVITY_TYPES: dict[str, list[str]] = {
+    "breakfast": [
         "bakery",
+        "cafe",
+        "coffee_shop",
+        "pastry_shop",
         "breakfast_restaurant",
         "brunch_restaurant",
-        "cafe",
-        "coffee_shop",
         "dessert_shop",
-        "pastry_shop",
-    },
-    "coffee": {
-        "bakery",
-        "cafe",
+    ],
+    "coffee": [
         "coffee_shop",
-        "dessert_shop",
-        "pastry_shop",
-    },
-    "lunch": {
+        "cafe",
         "bakery",
-        "barbecue_restaurant",
+        "pastry_shop",
+        "dessert_shop",
+    ],
+    "lunch": [
+        "restaurant",
         "bistro",
-        "diner",
+        "lunch_restaurant",
+        "sandwich_shop",
         "fast_food_restaurant",
         "italian_restaurant",
-        "lunch_restaurant",
-        "restaurant",
-        "sandwich_shop",
         "seafood_restaurant",
-    },
-    "dinner": {
         "barbecue_restaurant",
-        "bistro",
+        "diner",
+        "bakery",
+    ],
+    "dinner": [
+        "restaurant",
         "fine_dining_restaurant",
+        "bistro",
+        "steak_house",
+        "seafood_restaurant",
         "grill",
         "italian_restaurant",
-        "restaurant",
-        "seafood_restaurant",
-        "steak_house",
         "sushi_restaurant",
-    },
-    "nightlife": {
+        "barbecue_restaurant",
+    ],
+    "nightlife": [
         "bar",
         "cocktail_bar",
         "lounge",
-        "night_club",
         "pub",
-    },
-    "culture": {
+        "night_club",
+    ],
+    "culture": [
+        "museum",
+        "art_museum",
         "art_gallery",
         "history_museum",
-        "library",
-        "monument",
-        "museum",
         "tourist_attraction",
-    },
-    "family": {
+        "monument",
+        "library",
+    ],
+    "family": [
         "amusement_park",
-        "bowling_alley",
+        "zoo",
+        "playground",
         "movie_theater",
+        "bowling_alley",
         "museum",
         "park",
-        "playground",
-        "zoo",
-    },
-    "outdoors": {
+    ],
+    "outdoors": [
+        "park",
+        "hiking_area",
         "beach",
         "botanical_garden",
-        "hiking_area",
         "lake",
-        "park",
         "tourist_attraction",
-    },
-    "shopping": {
-        "book_store",
-        "clothing_store",
-        "market",
+    ],
+    "shopping": [
         "shopping_mall",
+        "market",
+        "clothing_store",
+        "book_store",
         "supermarket",
-    },
-    "wellness": {
-        "beauty_salon",
-        "gym",
+    ],
+    "wellness": [
+        "spa",
         "massage",
         "sauna",
-        "spa",
-    },
+        "gym",
+        "beauty_salon",
+    ],
+}
+
+CONTEXT_KEYWORDS: dict[str, set[str]] = {
+    context: set(activity_types)
+    for context, activity_types in CONTEXT_ACTIVITY_TYPES.items()
 }
 
 _DAY_ALIASES = {
@@ -139,3 +152,4 @@ _DAY_ALIASES = {
     "5": "saturday",
     "6": "sunday",
 }
+
