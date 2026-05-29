@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # INPUT_FILE = BASE_DIR / "data" / "cleaned_activities.csv"
-OUTPUT_FILE = BASE_DIR / "data" / "working_hours.csv"
+OUTPUT_FILE = BASE_DIR / "data" / "output" / "working_hours.csv"
 
 DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 

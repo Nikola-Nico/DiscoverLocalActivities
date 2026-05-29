@@ -10,8 +10,8 @@ from app.models import Activity, WorkingHours
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-activity_path = BASE_DIR / "data" / "cleaned_activities.csv"
-working_hours_path = BASE_DIR / "data" / "working_hours.csv"
+activity_path = BASE_DIR / "data" / "output" / "cleaned_activities.csv"
+working_hours_path = BASE_DIR / "data" / "output" / "working_hours.csv"
 
 activity_df = pd.read_csv(activity_path)
 working_hours_df = pd.read_csv(working_hours_path)
