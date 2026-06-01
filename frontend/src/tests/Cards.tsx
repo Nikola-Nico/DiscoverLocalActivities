@@ -1,8 +1,8 @@
-import { useActivities } from './FetchData.tsx';
+import { FetchActivities } from './FetchData.tsx';
 
 
 function Cards() {
-  const { data, loading, error } = useActivities();
+  const { data, loading, error } = FetchActivities();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;

@@ -31,14 +31,17 @@ interface Activity {
 
 interface User {
     name: string;
+  surname: string;
     email: string;
+  destination: string;
+  latitude: number;
+  longitude: number;
 }
 
 // TODO: Make filtering like in fastAPI, with query parameters. For example, you can have a function that takes a filter object and constructs the query string accordingly. This way, you can easily add more filters in the future without changing the function signature.
 
 
-
-export function useActivities() {
+export function FetchActivities() {
   const [data, setData] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
