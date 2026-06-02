@@ -1,11 +1,21 @@
 import { useState } from "react";
 import ActivitiesPanel from "./components/ActivitiesPanel";
-import MapPanel from "./components/MapPanel";
-import RecommendationFilters from "./components/RecommendationFilters";
-import RecommendationsPanel from "./components/RecommendationsPanel";
+import MapPanel from "./components/maps/MapPanel.tsx";
+import RecommendationFilters from "./components/recommendations/RecommendationFilters";
+import RecommendationsPanel from "./components/recommendations/RecommendationsPanel";
 import UsersPanel from "./components/UsersPanel";
 import { useFetchActivities, useFetchUsers, useRecommendations } from "./tests/FetchData.tsx";
-import type { MapMarker, ViewMode } from "./components/mapTypes";
+import type { MapMarker, ViewMode } from "./components/maps/mapTypes.ts";
+
+// TODO: 
+// - Add selected user marker to indicate the current user location
+// - Change the green design to hubby design
+// - Delete additional contexts, in API make it only as others, and Frontend others context should not be shown
+// - Fix the full details bug, not fetching working hours, phone contacts, and other n/a stuff
+// - Make the filterring into a user mode, and latitude and longitude filter
+// - Add a documentation of the whole workflow
+// - Make a MAKE/BASH/POWERSHELL script for 1 command initialization
+// - 
 
 function App() {
   const [view, setView] = useState<ViewMode>("activities");
