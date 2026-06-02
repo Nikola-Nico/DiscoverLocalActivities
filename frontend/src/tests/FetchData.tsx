@@ -1,6 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+export interface Recommendation {
+  id: number;
+  name: string;
+  category: string;
+  rating: number | null;
+  latitude: number;
+  longitude: number;
+  distanceKm: number;
+  recommendationScore: number;
+  recommendationReason: string;
+  isOpen: boolean;
+  context: string;
+}
 
+interface FetchOptions {
+  id?: string;
+  lat?: string;
+  lng?: string;
+  context?: string;
+  radius_km?: string;
+}
+
+interface RecommendationApiActivity {
+  id: number;
+  name: string;
+  type: string;
+  latitude: number;
+  longitude: number;
+  rating: number | null;
+  distance_km: number;
+  recommendation_score: number;
+  is_open: boolean;
+  context: string;
+}
+
+interface RecommendationApiResponse {
+  user_id?: number;
+  user_location: {
+    latitude: number;
+    longitude: number;
+  };
+  radius_km: number;
+  context: string;
+  response_timestamp: string;
+  results_count: number;
+  activities: RecommendationApiActivity[];
+}
 interface WorkingHours {
   id: number;
   activity_id: number;
@@ -41,7 +87,7 @@ interface User {
 // TODO: Make filtering like in fastAPI, with query parameters. For example, you can have a function that takes a filter object and constructs the query string accordingly. This way, you can easily add more filters in the future without changing the function signature.
 
 
-export function FetchActivities() {
+export function useFetchActivities() {
   const [data, setData] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -61,7 +107,7 @@ export function FetchActivities() {
 
 
 // 
-export function FetchUsers() {
+export function useFetchUsers() {
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -79,21 +125,83 @@ export function FetchUsers() {
   return { data, loading, error };
 }
 
-export function FetchRecommendation(id: number) {
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useRecommendations({ id, lat, lng, context, radius_km }: FetchOptions) {
+  const [data, setData] = useState<Recommendation[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  useEffect(() => {
-    fetch(`http://localhost:8000/users/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-      })
-      .then(data => { setData(data); setLoading(false); })
-      .catch(err => { setError(err); setLoading(false); });
+  const normalizedId = id?.trim();
+  const normalizedLat = lat?.trim();
+  const normalizedLng = lng?.trim();
+  const normalizedContext = context?.trim();
+  const normalizedRadius = radius_km?.trim();
+  const hasUserId = Boolean(normalizedId);
+  const hasCoordinates = Boolean(normalizedLat && normalizedLng);
+  const shouldFetch = hasUserId || hasCoordinates;
+
+  const refresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
   }, []);
 
-  return { data, loading, error };
-}
+  useEffect(() => {
+    if (!shouldFetch) {
+      setData([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
 
+    const query = new URLSearchParams();
+    if (normalizedContext) query.append('context', normalizedContext);
+    if (normalizedRadius) query.append('radius_km', normalizedRadius);
+
+    let url = '';
+    if (hasUserId) {
+      url = `http://localhost:8000/recommendations/${normalizedId}`;
+    } else if (hasCoordinates) {
+      query.append('lat', normalizedLat!);
+      query.append('lon', normalizedLng!);
+      url = 'http://localhost:8000/recommendations';
+    }
+
+    const queryString = query.toString();
+    const requestUrl = `${url}${queryString ? `?${queryString}` : ''}`;
+
+    setLoading(true);
+    setError(null);
+
+    fetch(requestUrl)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch recommendations');
+        return res.json();
+      })
+      .then((response: RecommendationApiResponse) => {
+        const mapped = response.activities.map((activity) => ({
+          id: activity.id,
+          name: activity.name,
+          category: activity.type,
+          rating: activity.rating,
+          latitude: activity.latitude,
+          longitude: activity.longitude,
+          distanceKm: activity.distance_km,
+          recommendationScore: activity.recommendation_score,
+          recommendationReason: activity.is_open
+            ? `Open now and ranked for the ${response.context} context.`
+            : `Ranked for the ${response.context} context.`,
+          isOpen: activity.is_open,
+          context: activity.context,
+        }));
+
+        setData(mapped);
+        setLoading(false); // This is fine because it happens ASYNCHRONOUSLY later
+      })
+      .catch(err => {
+        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+        setLoading(false); // This is fine because it happens ASYNCHRONOUSLY later
+      });
+
+  }, [hasCoordinates, hasUserId, normalizedContext, normalizedId, normalizedLat, normalizedLng, normalizedRadius, refreshTrigger, shouldFetch]);
+
+  return { data, loading, error, refresh };
+}
