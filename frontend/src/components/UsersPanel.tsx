@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import type { useFetchUsers } from "../tests/FetchData.tsx";
+
+const PAGE_SIZE = 12;
 
 type UsersPanelProps = {
   data: ReturnType<typeof useFetchUsers>["data"];
@@ -7,23 +11,44 @@ type UsersPanelProps = {
 };
 
 export default function UsersPanel({ data, loading, error }: UsersPanelProps) {
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [data]);
+
   if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading users...</div>;
   if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
 
+  const visibleUsers = data.slice(0, visibleCount);
+  const hasMore = visibleCount < data.length;
+
+  const loadMore = () => {
+    setVisibleCount((currentCount) => Math.min(currentCount + PAGE_SIZE, data.length));
+  };
+
   return (
-    <div className="grid gap-4 px-5 py-5 md:grid-cols-2 lg:grid-cols-3">
-      {data.map((user) => (
-        <div
-          key={`${user.name}-${user.email}`}
-          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg"
-        >
-          <h3 className="text-lg font-semibold text-slate-900">
-            {user.name} {user.surname}
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">{user.email}</p>
-          <p className="mt-1 text-sm text-slate-600">{user.destination}</p>
-        </div>
-      ))}
-    </div>
+    <InfiniteScroll
+      dataLength={visibleUsers.length}
+      next={loadMore}
+      hasMore={hasMore}
+      loader={<div className="px-5 py-4 text-sm text-slate-600">Loading more users...</div>}
+      endMessage={<div className="px-5 py-4 text-sm text-slate-500">You have reached the end of the user list.</div>}
+    >
+      <div className="grid gap-4 px-5 py-5 md:grid-cols-2 lg:grid-cols-3">
+        {visibleUsers.map((user) => (
+          <div
+            key={`${user.name}-${user.email}`}
+            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">
+              {user.name} {user.surname}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">{user.email}</p>
+            <p className="mt-1 text-sm text-slate-600">{user.destination}</p>
+          </div>
+        ))}
+      </div>
+    </InfiniteScroll>
   );
 }

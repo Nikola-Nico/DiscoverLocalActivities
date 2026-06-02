@@ -141,6 +141,7 @@ function App() {
             recommendationPanel
           )}
         </section>
+        
       </div>
     </main>
   );
