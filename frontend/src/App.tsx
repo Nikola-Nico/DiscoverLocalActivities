@@ -5,7 +5,7 @@ import RecommendationCard from "./components/RecommendationCards";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { FetchActivities, FetchUsers } from "./tests/FetchData.tsx";
+import { useFetchActivities, useFetchUsers , useRecommendations} from "./tests/FetchData.tsx";
 
 type MapMarker = {
   latitude: number;
@@ -74,8 +74,8 @@ function App() {
 }
 
 function MapPanel({ view }: { view: "activities" | "users" }) {
-  const activitiesResult = FetchActivities();
-  const usersResult = FetchUsers();
+  const activitiesResult = useFetchActivities();
+  const usersResult = useFetchUsers();
 
   const markers: MapMarker[] =
     view === "activities"
@@ -109,7 +109,7 @@ function MapPanel({ view }: { view: "activities" | "users" }) {
 }
 
 function ActivitiesPanel() {
-  const { data, loading, error } = FetchActivities();
+  const { data, loading, error } = useFetchActivities();
 
   if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading activities...</div>;
   if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
@@ -192,7 +192,7 @@ function MapPlaceholder({ text, error = false }: { text: string; error?: boolean
 }
 
 function UsersPanel() {
-  const { data, loading, error } = FetchUsers();
+  const { data, loading, error } = useFetchUsers();
 
   if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading users...</div>;
   if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
