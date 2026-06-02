@@ -1,22 +1,51 @@
-import { useState, useEffect , useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface Recommendation {
-  id: string;
+  id: number;
   name: string;
   category: string;
-  rating: number;
-  distance: number;
+  rating: number | null;
+  latitude: number;
+  longitude: number;
+  distanceKm: number;
   recommendationScore: number;
-  workingHours: string;
   recommendationReason: string;
+  isOpen: boolean;
+  context: string;
 }
 
 interface FetchOptions {
-  id: number;
-  lat?: string | number | null;
-  lng?: string | number | null;
+  id?: string;
+  lat?: string;
+  lng?: string;
   context?: string;
-  radius_km?: number;
+  radius_km?: string;
+}
+
+interface RecommendationApiActivity {
+  id: number;
+  name: string;
+  type: string;
+  latitude: number;
+  longitude: number;
+  rating: number | null;
+  distance_km: number;
+  recommendation_score: number;
+  is_open: boolean;
+  context: string;
+}
+
+interface RecommendationApiResponse {
+  user_id?: number;
+  user_location: {
+    latitude: number;
+    longitude: number;
+  };
+  radius_km: number;
+  context: string;
+  response_timestamp: string;
+  results_count: number;
+  activities: RecommendationApiActivity[];
 }
 interface WorkingHours {
   id: number;
@@ -102,56 +131,77 @@ export function useRecommendations({ id, lat, lng, context, radius_km }: FetchOp
   const [error, setError] = useState<Error | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  // 1. Keep track of the parameters from the previous render pass
-  const [prevParams, setPrevParams] = useState({ id, lat, lng, context, radius_km, refreshTrigger });
-
-  // 2. Check if any dependency changed. If so, adjust state immediately DURING render.
-  if (
-    id !== prevParams.id ||
-    lat !== prevParams.lat ||
-    lng !== prevParams.lng ||
-    context !== prevParams.context ||
-    radius_km !== prevParams.radius_km ||
-    refreshTrigger !== prevParams.refreshTrigger
-  ) {
-    setPrevParams({ id, lat, lng, context, radius_km, refreshTrigger });
-    setLoading(true);
-    setError(null);
-  }
+  const normalizedId = id?.trim();
+  const normalizedLat = lat?.trim();
+  const normalizedLng = lng?.trim();
+  const normalizedContext = context?.trim();
+  const normalizedRadius = radius_km?.trim();
+  const hasUserId = Boolean(normalizedId);
+  const hasCoordinates = Boolean(normalizedLat && normalizedLng);
+  const shouldFetch = hasUserId || hasCoordinates;
 
   const refresh = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
 
   useEffect(() => {
-    if (!id) return;
-
-    // 🔴 NOTE: setLoading(true) and setError(null) have been removed from here!
+    if (!shouldFetch) {
+      setData([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
 
     const query = new URLSearchParams();
-    if (lat) query.append('lat', lat.toString());
-    if (lng) query.append('lng', lng.toString());
-    if (context) query.append('context', context);
-    if (radius_km) query.append('radius_km', radius_km.toString());
+    if (normalizedContext) query.append('context', normalizedContext);
+    if (normalizedRadius) query.append('radius_km', normalizedRadius);
+
+    let url = '';
+    if (hasUserId) {
+      url = `http://localhost:8000/recommendations/${normalizedId}`;
+    } else if (hasCoordinates) {
+      query.append('lat', normalizedLat!);
+      query.append('lon', normalizedLng!);
+      url = 'http://localhost:8000/recommendations';
+    }
 
     const queryString = query.toString();
-    const url = `http://localhost:8000/recommendations/${id}${queryString ? `?${queryString}` : ''}`;
+    const requestUrl = `${url}${queryString ? `?${queryString}` : ''}`;
 
-    fetch(url)
+    setLoading(true);
+    setError(null);
+
+    fetch(requestUrl)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch recommendations');
         return res.json();
       })
-      .then((data: Recommendation[]) => {
-        setData(data);
+      .then((response: RecommendationApiResponse) => {
+        const mapped = response.activities.map((activity) => ({
+          id: activity.id,
+          name: activity.name,
+          category: activity.type,
+          rating: activity.rating,
+          latitude: activity.latitude,
+          longitude: activity.longitude,
+          distanceKm: activity.distance_km,
+          recommendationScore: activity.recommendation_score,
+          recommendationReason: activity.is_open
+            ? `Open now and ranked for the ${response.context} context.`
+            : `Ranked for the ${response.context} context.`,
+          isOpen: activity.is_open,
+          context: activity.context,
+        }));
+
+        setData(mapped);
         setLoading(false); // This is fine because it happens ASYNCHRONOUSLY later
       })
       .catch(err => {
         setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         setLoading(false); // This is fine because it happens ASYNCHRONOUSLY later
       });
-      
-  }, [id, lat, lng, context, radius_km, refreshTrigger]);
+
+  }, [hasCoordinates, hasUserId, normalizedContext, normalizedId, normalizedLat, normalizedLng, normalizedRadius, refreshTrigger, shouldFetch]);
 
   return { data, loading, error, refresh };
 }
