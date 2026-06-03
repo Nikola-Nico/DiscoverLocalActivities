@@ -30,10 +30,10 @@ export default function MapPanel({
         : "All fetched activities are plotted by default until you enter recommendation filters.";
 
   return (
-    <div className="border-b border-slate-200/80 px-5 py-4">
-      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-      <p className="text-sm text-slate-500">{description}</p>
-      <div className="mt-4 overflow-hidden rounded-3xl border border-slate-200 bg-slate-100">
+    <div className="border-b border-border px-6 py-5">
+      <h2 className="text-xl font-bold text-foreground">{title}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      <div className="mt-4 overflow-hidden rounded-3xl border border-border bg-muted shadow-card">
         <MapView markers={markers} loading={loading} error={error} />
       </div>
     </div>

@@ -27,6 +27,11 @@ type RecommendationFiltersProps = {
   recommendationMode: boolean;
 };
 
+const fieldLabel =
+  "flex min-w-36 flex-1 flex-col gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground";
+const fieldInput =
+  "w-full rounded-full border border-border bg-card px-4 py-2.5 text-sm font-normal normal-case tracking-normal text-foreground outline-none transition focus:border-transparent focus:ring-2 focus:ring-ring";
+
 export default function RecommendationFilters({
   userId,
   setUserId,
@@ -41,9 +46,9 @@ export default function RecommendationFilters({
   recommendationMode,
 }: RecommendationFiltersProps) {
   return (
-    <div className="border-b border-slate-200/80 px-5 py-4">
-      <div className="mb-4 flex flex-wrap items-end gap-3">
-        <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm font-medium text-slate-700">
+    <div className="border-b border-border px-6 py-5">
+      <div className="mb-4 grid gap-4 md:grid-cols-5">
+        <label className={fieldLabel}>
           User ID
           <input
             type="number"
@@ -51,10 +56,10 @@ export default function RecommendationFilters({
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
             placeholder="Enter a user id"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className={fieldInput}
           />
         </label>
-        <label className="flex min-w-36 flex-1 flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className={fieldLabel}>
           Latitude
           <input
             type="number"
@@ -62,10 +67,10 @@ export default function RecommendationFilters({
             value={lat}
             onChange={(event) => setLat(event.target.value)}
             placeholder="45.815"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className={fieldInput}
           />
         </label>
-        <label className="flex min-w-36 flex-1 flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className={fieldLabel}>
           Longitude
           <input
             type="number"
@@ -73,15 +78,15 @@ export default function RecommendationFilters({
             value={lng}
             onChange={(event) => setLng(event.target.value)}
             placeholder="15.981"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className={fieldInput}
           />
         </label>
-        <label className="flex min-w-40 flex-1 flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className={fieldLabel}>
           Context
           <select
             value={context}
             onChange={(event) => setContext(event.target.value)}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className={fieldInput}
           >
             <option value="">Choose a context</option>
             {CONTEXT_OPTIONS.map((option) => (
@@ -91,7 +96,7 @@ export default function RecommendationFilters({
             ))}
           </select>
         </label>
-        <label className="flex min-w-36 flex-1 flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className={fieldLabel}>
           Radius km
           <input
             type="number"
@@ -100,16 +105,25 @@ export default function RecommendationFilters({
             value={radiusKm}
             onChange={(event) => setRadiusKm(event.target.value)}
             placeholder="1.0"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className={fieldInput}
           />
         </label>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
-        <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">
+      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+        <span
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold ${
+            recommendationMode
+              ? "bg-gradient-pill text-primary-foreground shadow-pill"
+              : "bg-secondary text-secondary-foreground"
+          }`}
+        >
           {recommendationMode ? "Recommendation mode active" : "Activities stay visible by default"}
         </span>
-        <span>Use a user ID for stored-location recommendations or latitude and longitude for direct coordinates.</span>
+        <span>
+          Use a user ID for stored-location recommendations or latitude and longitude for direct
+          coordinates.
+        </span>
       </div>
     </div>
   );

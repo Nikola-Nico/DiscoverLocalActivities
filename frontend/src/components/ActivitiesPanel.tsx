@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import RecommendationCard from "./recommendations/RecommendationCards";
-import type { useFetchActivities } from "../tests/FetchData.tsx";
+import type { useFetchActivities } from "../tests/FetchData";
 
 const PAGE_SIZE = 12;
 
@@ -18,24 +18,28 @@ export default function ActivitiesPanel({ data, loading, error }: ActivitiesPane
     setVisibleCount(PAGE_SIZE);
   }, [data]);
 
-  if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading activities...</div>;
-  if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
+  if (loading)
+    return <div className="px-6 py-5 text-sm text-muted-foreground">Loading activities...</div>;
+  if (error)
+    return <div className="px-6 py-5 text-sm text-destructive">Error: {error.message}</div>;
 
   const visibleActivities = data.slice(0, visibleCount);
   const hasMore = visibleCount < data.length;
 
   const loadMore = () => {
-    setVisibleCount((currentCount) => Math.min(currentCount + PAGE_SIZE, data.length));
+    setVisibleCount((c) => Math.min(c + PAGE_SIZE, data.length));
   };
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 px-5 py-4">
+      <div className="flex items-end justify-between gap-4 border-b border-border px-6 py-5">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Activities</h2>
-          <p className="text-sm text-slate-500">Recommended places loaded from the backend.</p>
+          <h2 className="text-2xl font-bold text-foreground">Activities</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Recommended places loaded from the backend.
+          </p>
         </div>
-        <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">
+        <span className="shrink-0 rounded-full bg-gradient-pill px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-pill">
           {data.length} spots
         </span>
       </div>
@@ -44,10 +48,19 @@ export default function ActivitiesPanel({ data, loading, error }: ActivitiesPane
         dataLength={visibleActivities.length}
         next={loadMore}
         hasMore={hasMore}
-        loader={<div className="px-5 py-4 text-sm text-slate-600">Loading more activities...</div>}
-        endMessage={<div className="px-5 py-4 text-sm text-slate-500">You have reached the end of the activity list.</div>}
+        loader={
+          <div className="px-6 py-5 text-sm text-muted-foreground">
+            Loading more activities...
+          </div>
+        }
+        endMessage={
+          <div className="px-6 py-5 text-sm text-muted-foreground">
+            You have reached the end of the activity list.
+          </div>
+        }
+        style={{ overflow: "visible" }}
       >
-        <div className="grid gap-4 px-5 py-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 px-6 py-6 md:grid-cols-2 lg:grid-cols-3">
           {visibleActivities.map((activity) => (
             <RecommendationCard
               key={activity.id}
@@ -55,6 +68,8 @@ export default function ActivitiesPanel({ data, loading, error }: ActivitiesPane
               category={activity.type}
               rating={activity.rating}
               phone={activity.phone_number}
+              latitude={activity.latitude}
+              longitude={activity.longitude}
             />
           ))}
         </div>
