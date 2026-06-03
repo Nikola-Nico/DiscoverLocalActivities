@@ -78,9 +78,9 @@ export default function RecommendationsPanel({ data, loading, error }: Recommend
                 isOpen={item.isOpen}
                 latitude={item.latitude}
                 longitude={item.longitude}
-                // phone={item.phone}
                 context={item.context}
-                // userRatingCount={item.userRatingCount}
+                userRatingCount={item.userRatingCount}
+                workingHours={item.workingHours}
               />
             ))}
           </div>

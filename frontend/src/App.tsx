@@ -14,7 +14,6 @@ import type { MapMarker, ViewMode } from "./components/maps/mapTypes";
 
 
 
-
 function App() {
   const [view, setView] = useState<ViewMode>("activities");
   const [userId, setUserId] = useState("");
@@ -38,6 +37,8 @@ function App() {
   const hasCoordinates = lat.trim().length > 0 && lng.trim().length > 0;
   const recommendationMode = view === "activities" && (hasUserId || hasCoordinates);
 
+  const selectedUser = usersResult.data.find((u: any) => u.id?.toString() === userId);
+
   const activityMarkers: MapMarker[] = activitiesResult.data.map((activity) => ({
     latitude: activity.latitude,
     longitude: activity.longitude,
@@ -50,30 +51,33 @@ function App() {
     popup: `<strong>${item.name}</strong><br />${item.category}<br />⭐ ${item.rating ?? "n/a"}<br />${item.distanceKm.toFixed(2)} km away`,
   }));
 
-  const userMarkers: MapMarker[] = usersResult.data.map((user) => ({
-    latitude: user.latitude,
-    longitude: user.longitude,
-    popup: `<strong>${user.name} ${user.surname}</strong><br />${user.destination}<br />${user.email}`,
-  }));
+  const userLocationMarker: MapMarker | null = selectedUser
+  ? {
+      latitude: selectedUser.latitude,
+      longitude: selectedUser.longitude,
+      popup: `<strong>${selectedUser.name} ${selectedUser.surname}</strong><br />Current Location`,
+      isUserLocation: true,
+    }
+  : hasCoordinates
+    ? {
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lng),
+        popup: `<strong>Selected Location</strong>`,
+        isUserLocation: true,
+      }
+    : null;
 
-  const mapMarkers =
-    view === "users"
-      ? userMarkers
-      : recommendationMode
-        ? recommendationMarkers
-        : activityMarkers;
+  const mapMarkers = recommendationMode
+    ? (userLocationMarker ? [userLocationMarker, ...recommendationMarkers] : recommendationMarkers)
+    : activityMarkers;
 
   const mapLoading =
-    view === "users"
-      ? usersResult.loading
-      : recommendationMode
+      recommendationMode
         ? recommendationsResult.loading
         : activitiesResult.loading;
 
   const mapError =
-    view === "users"
-      ? usersResult.error
-      : recommendationMode
+      recommendationMode
         ? recommendationsResult.error
         : activitiesResult.error;
 
@@ -99,45 +103,19 @@ function App() {
           <div className="text-xl font-extrabold">
             <span className="text-gradient-hubby">Hubby</span>
           </div>
-          <nav className="hidden gap-8 text-sm font-medium text-foreground/80 md:flex">
-            <a href="#" className="hover:text-foreground">Activities</a>
-            <a href="#" className="hover:text-foreground">Map</a>
-            <a href="#" className="hover:text-foreground">Help</a>
-          </nav>
-          <button className="rounded-full bg-gradient-pill px-5 py-2 text-sm font-semibold text-primary-foreground shadow-pill">
-            Get the app
-          </button>
         </header>
 
         {/* Hero */}
         <div className="mb-8 flex flex-col gap-3 text-center md:text-left">
           <h1 className="text-5xl font-extrabold tracking-tight md:text-6xl">
-            Recommended Activities
+            Discover Local Activities
           </h1>
-          <p className="max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Discover recommended local places, then explore them on a live Leaflet map.
+          <p className="text-lg text-muted-foreground md:text-xl">
+            Find great spots and fun activities right in your own neighborhood. Exploring these nearby places helps you enjoy where you live even more.
           </p>
         </div>
 
         <section className="mb-8 overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
-          {/* Tabs */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-border px-6 py-4">
-            {(["activities", "users"] as const).map((v) => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => setView(v)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold capitalize transition-all ${
-                  view === v
-                    ? "bg-gradient-pill text-primary-foreground shadow-pill"
-                    : "bg-secondary text-secondary-foreground hover:bg-muted"
-                }`}
-              >
-                {v}
-              </button>
-            ))}
-          </div>
-
           {view === "activities" && (
             <RecommendationFilters
               userId={userId}
@@ -151,6 +129,7 @@ function App() {
               radiusKm={radiusKm}
               setRadiusKm={setRadiusKm}
               recommendationMode={recommendationMode}
+              users={usersResult.data}
             />
           )}
 
@@ -162,15 +141,9 @@ function App() {
             error={mapError}
           />
 
-          {view === "users" ? (
-            <UsersPanel
-              data={usersResult.data}
-              loading={usersResult.loading}
-              error={usersResult.error}
-            />
-          ) : (
-            recommendationPanel
-          )}
+          
+          {recommendationPanel}
+          
         </section>
 
         <footer className="pb-6 text-center text-xs text-muted-foreground">

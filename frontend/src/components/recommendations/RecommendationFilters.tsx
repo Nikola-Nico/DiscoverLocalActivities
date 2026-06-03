@@ -25,6 +25,7 @@ type RecommendationFiltersProps = {
   radiusKm: string;
   setRadiusKm: (value: string) => void;
   recommendationMode: boolean;
+  users: any[];
 };
 
 const fieldLabel =
@@ -44,20 +45,25 @@ export default function RecommendationFilters({
   radiusKm,
   setRadiusKm,
   recommendationMode,
+  users,
 }: RecommendationFiltersProps) {
   return (
     <div className="border-b border-border px-6 py-5">
       <div className="mb-4 grid gap-4 md:grid-cols-5">
         <label className={fieldLabel}>
-          User ID
-          <input
-            type="number"
-            min="1"
+          User
+          <select
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            placeholder="Enter a user id"
             className={fieldInput}
-          />
+          >
+            <option value="">Select a user</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id} className="rounded-2xl">
+                {user.name} {user.surname}
+              </option>
+            ))}
+          </select>
         </label>
         <label className={fieldLabel}>
           Latitude

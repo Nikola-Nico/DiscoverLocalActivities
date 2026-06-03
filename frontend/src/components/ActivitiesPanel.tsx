@@ -70,6 +70,9 @@ export default function ActivitiesPanel({ data, loading, error }: ActivitiesPane
               phone={activity.phone_number}
               latitude={activity.latitude}
               longitude={activity.longitude}
+              workingHours={activity.working_hours} // Pass down
+              userRatingCount={activity.user_rating_count} // Pass down
+              isOpen={(activity as any).is_open} // Pass down
             />
           ))}
         </div>

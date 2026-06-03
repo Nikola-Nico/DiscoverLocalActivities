@@ -12,8 +12,9 @@ export interface Recommendation {
   recommendationReason: string;
   isOpen: boolean;
   context: string;
+  workingHours?: any[]; 
+  userRatingCount?: number; 
 }
-
 interface FetchOptions {
   id?: string;
   lat?: string;
@@ -46,6 +47,7 @@ interface RecommendationApiResponse {
   response_timestamp: string;
   results_count: number;
   activities: RecommendationApiActivity[];
+  phone?: string | null;
 }
 interface WorkingHours {
   id: number;
@@ -177,7 +179,7 @@ export function useRecommendations({ id, lat, lng, context, radius_km }: FetchOp
         return res.json();
       })
       .then((response: RecommendationApiResponse) => {
-        const mapped = response.activities.map((activity) => ({
+        const mapped = response.activities.map((activity: any) => ({
           id: activity.id,
           name: activity.name,
           category: activity.type,
@@ -191,8 +193,10 @@ export function useRecommendations({ id, lat, lng, context, radius_km }: FetchOp
             : `Ranked for the ${response.context} context.`,
           isOpen: activity.is_open,
           context: activity.context,
+          workingHours: activity.working_hours, // <-- MAKE SURE THIS IS HERE
+          userRatingCount: activity.user_rating_count, 
         }));
-
+        
         setData(mapped);
         setLoading(false); // This is fine because it happens ASYNCHRONOUSLY later
       })

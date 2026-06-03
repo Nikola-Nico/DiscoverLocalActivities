@@ -215,21 +215,11 @@ export default function RecommendationCard({
                   )}
                 </div>
 
-                {recommendationReason && (
-                  <div className="rounded-3xl border border-border bg-secondary p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gradient-hubby">
-                      Why this card is ranked here
-                    </p>
-                    <p className="mt-2 text-base leading-7 text-card-foreground">
-                      {recommendationReason}
-                    </p>
-                  </div>
-                )}
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <InfoBox label="Contact">
-                    <Row label="Phone" value={phone ?? "n/a"} />
-                    <Row label="Price" value={priceLevel ?? "n/a"} />
+                    <Row label="Rating Count" value={userRatingCount?.toString() ?? "n/a"} />
+                    <Row label="Phone" value={phone?? "n/a"} />
                   </InfoBox>
                   <InfoBox label="Location">
                     <Row
@@ -271,6 +261,13 @@ export default function RecommendationCard({
                           <h5 className="font-semibold text-card-foreground">
                             {formatDayLabel(workingHour.day_of_week)}
                           </h5>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                          {workingHour.is_closed
+                            ? "Closed all day"
+                            : workingHour.is_open_24h
+                              ? "Open 24 hours"
+                              : `${formatTime(workingHour.open_time)} - ${formatTime(workingHour.close_time)}`}
+                          </p>
                           <span
                             className={`rounded-full px-3 py-1 text-xs font-semibold ${
                               workingHour.is_closed
@@ -287,13 +284,7 @@ export default function RecommendationCard({
                                 : "Scheduled"}
                           </span>
                         </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {workingHour.is_closed
-                            ? "Closed all day"
-                            : workingHour.is_open_24h
-                              ? "Open 24 hours"
-                              : `${formatTime(workingHour.open_time)} - ${formatTime(workingHour.close_time)}`}
-                        </p>
+                        
                         {workingHour.break_hour_start && workingHour.break_hour_end && (
                           <p className="mt-1 text-sm text-muted-foreground">
                             Break: {formatTime(workingHour.break_hour_start)} -{" "}
