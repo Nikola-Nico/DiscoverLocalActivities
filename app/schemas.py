@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field
 # ─────────────────────────────────────────────
 
 class UserBase(BaseModel):
+    id: int
     name: str
     surname: str
     email: str
@@ -22,7 +23,7 @@ class UserCreate(UserBase):
 
 
 class UserRead(UserBase):
-    id: int
+
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

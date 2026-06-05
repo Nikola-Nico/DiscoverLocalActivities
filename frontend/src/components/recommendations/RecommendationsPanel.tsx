@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import RecommendationCard from "./RecommendationCards";
-import type { useRecommendations } from "../tests/FetchData.tsx";
+import type { useRecommendations } from "../../tests/FetchData";
 
 const PAGE_SIZE = 12;
 
@@ -18,30 +18,34 @@ export default function RecommendationsPanel({ data, loading, error }: Recommend
     setVisibleCount(PAGE_SIZE);
   }, [data]);
 
-  if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading recommendations...</div>;
-  if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
+  if (loading)
+    return <div className="px-6 py-5 text-sm text-muted-foreground">Loading recommendations...</div>;
+  if (error)
+    return <div className="px-6 py-5 text-sm text-destructive">Error: {error.message}</div>;
 
   const visibleRecommendations = data.slice(0, visibleCount);
   const hasMore = visibleCount < data.length;
 
   const loadMore = () => {
-    setVisibleCount((currentCount) => Math.min(currentCount + PAGE_SIZE, data.length));
+    setVisibleCount((c) => Math.min(c + PAGE_SIZE, data.length));
   };
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 px-5 py-4">
+      <div className="flex items-end justify-between gap-4 border-b border-border px-6 py-5">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Recommendations</h2>
-          <p className="text-sm text-slate-500">The list updates as you change the user ID, coordinates, context, or radius.</p>
+          <h2 className="text-2xl font-bold text-foreground">Recommendations</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            The list updates as you change the user ID, coordinates, context, or radius.
+          </p>
         </div>
-        <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">
+        <span className="shrink-0 rounded-full bg-gradient-pill px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-pill">
           {data.length} matches
         </span>
       </div>
 
       {data.length === 0 ? (
-        <div className="px-5 py-6 text-sm text-slate-600">
+        <div className="px-6 py-8 text-sm text-muted-foreground">
           No recommendations yet. Enter a user ID or a latitude/longitude pair to fetch results.
         </div>
       ) : (
@@ -49,10 +53,19 @@ export default function RecommendationsPanel({ data, loading, error }: Recommend
           dataLength={visibleRecommendations.length}
           next={loadMore}
           hasMore={hasMore}
-          loader={<div className="px-5 py-4 text-sm text-slate-600">Loading more recommendations...</div>}
-          endMessage={<div className="px-5 py-4 text-sm text-slate-500">You have reached the end of the recommendations.</div>}
+          loader={
+            <div className="px-6 py-5 text-sm text-muted-foreground">
+              Loading more recommendations...
+            </div>
+          }
+          endMessage={
+            <div className="px-6 py-5 text-sm text-muted-foreground">
+              You have reached the end of the recommendations.
+            </div>
+          }
+          style={{ overflow: "visible" }}
         >
-          <div className="grid gap-4 px-5 py-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 px-6 py-6 md:grid-cols-2 lg:grid-cols-3">
             {visibleRecommendations.map((item) => (
               <RecommendationCard
                 key={item.id}
@@ -63,6 +76,11 @@ export default function RecommendationsPanel({ data, loading, error }: Recommend
                 recommendationScore={item.recommendationScore}
                 recommendationReason={item.recommendationReason}
                 isOpen={item.isOpen}
+                latitude={item.latitude}
+                longitude={item.longitude}
+                context={item.context}
+                userRatingCount={item.userRatingCount}
+                workingHours={item.workingHours}
               />
             ))}
           </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import type { useFetchUsers } from "../tests/FetchData.tsx";
+import type { useFetchUsers } from "../tests/FetchData";
 
 const PAGE_SIZE = 12;
 
@@ -17,14 +17,16 @@ export default function UsersPanel({ data, loading, error }: UsersPanelProps) {
     setVisibleCount(PAGE_SIZE);
   }, [data]);
 
-  if (loading) return <div className="px-5 py-4 text-sm text-slate-600">Loading users...</div>;
-  if (error) return <div className="px-5 py-4 text-sm text-red-600">Error: {error.message}</div>;
+  if (loading)
+    return <div className="px-6 py-5 text-sm text-muted-foreground">Loading users...</div>;
+  if (error)
+    return <div className="px-6 py-5 text-sm text-destructive">Error: {error.message}</div>;
 
   const visibleUsers = data.slice(0, visibleCount);
   const hasMore = visibleCount < data.length;
 
   const loadMore = () => {
-    setVisibleCount((currentCount) => Math.min(currentCount + PAGE_SIZE, data.length));
+    setVisibleCount((c) => Math.min(c + PAGE_SIZE, data.length));
   };
 
   return (
@@ -32,20 +34,27 @@ export default function UsersPanel({ data, loading, error }: UsersPanelProps) {
       dataLength={visibleUsers.length}
       next={loadMore}
       hasMore={hasMore}
-      loader={<div className="px-5 py-4 text-sm text-slate-600">Loading more users...</div>}
-      endMessage={<div className="px-5 py-4 text-sm text-slate-500">You have reached the end of the user list.</div>}
+      loader={
+        <div className="px-6 py-5 text-sm text-muted-foreground">Loading more users...</div>
+      }
+      endMessage={
+        <div className="px-6 py-5 text-sm text-muted-foreground">
+          You have reached the end of the user list.
+        </div>
+      }
+      style={{ overflow: "visible" }}
     >
-      <div className="grid gap-4 px-5 py-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 px-6 py-6 md:grid-cols-2 lg:grid-cols-3">
         {visibleUsers.map((user) => (
           <div
             key={`${user.name}-${user.email}`}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg"
+            className="rounded-3xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:shadow-pill"
           >
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-xl font-bold text-card-foreground">
               {user.name} {user.surname}
             </h3>
-            <p className="mt-2 text-sm text-slate-600">{user.email}</p>
-            <p className="mt-1 text-sm text-slate-600">{user.destination}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{user.email}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{user.destination}</p>
           </div>
         ))}
       </div>

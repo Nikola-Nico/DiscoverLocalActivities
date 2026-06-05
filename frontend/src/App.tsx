@@ -1,25 +1,23 @@
+// import { createFileRoute } from ".tanstack/react-router";
 import { useState } from "react";
 import ActivitiesPanel from "./components/ActivitiesPanel";
-import MapPanel from "./components/maps/MapPanel.tsx";
+import MapPanel from "./components/maps/MapPanel";
 import RecommendationFilters from "./components/recommendations/RecommendationFilters";
 import RecommendationsPanel from "./components/recommendations/RecommendationsPanel";
 import UsersPanel from "./components/UsersPanel";
-import { useFetchActivities, useFetchUsers, useRecommendations } from "./tests/FetchData.tsx";
-import type { MapMarker, ViewMode } from "./components/maps/mapTypes.ts";
+import {
+  useFetchActivities,
+  useFetchUsers,
+  useRecommendations,
+} from "./tests/FetchData";
+import type { MapMarker, ViewMode } from "./components/maps/mapTypes";
 
-// TODO: 
-// - Add selected user marker to indicate the current user location
-// - Change the green design to hubby design
-// - Delete additional contexts, in API make it only as others, and Frontend others context should not be shown
-// - Fix the full details bug, not fetching working hours, phone contacts, and other n/a stuff
-// - Make the filterring into a user mode, and latitude and longitude filter
-// - Add a documentation of the whole workflow
-// - Make a MAKE/BASH/POWERSHELL script for 1 command initialization
-// - 
+
 
 function App() {
   const [view, setView] = useState<ViewMode>("activities");
   const [userId, setUserId] = useState("");
+  const [userFullName, setUserFullName] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [context, setContext] = useState("");
@@ -39,6 +37,8 @@ function App() {
   const hasCoordinates = lat.trim().length > 0 && lng.trim().length > 0;
   const recommendationMode = view === "activities" && (hasUserId || hasCoordinates);
 
+  const selectedUser = usersResult.data.find((u: any) => u.id?.toString() === userId);
+
   const activityMarkers: MapMarker[] = activitiesResult.data.map((activity) => ({
     latitude: activity.latitude,
     longitude: activity.longitude,
@@ -51,30 +51,33 @@ function App() {
     popup: `<strong>${item.name}</strong><br />${item.category}<br />⭐ ${item.rating ?? "n/a"}<br />${item.distanceKm.toFixed(2)} km away`,
   }));
 
-  const userMarkers: MapMarker[] = usersResult.data.map((user) => ({
-    latitude: user.latitude,
-    longitude: user.longitude,
-    popup: `<strong>${user.name} ${user.surname}</strong><br />${user.destination}<br />${user.email}`,
-  }));
+  const userLocationMarker: MapMarker | null = selectedUser
+  ? {
+      latitude: selectedUser.latitude,
+      longitude: selectedUser.longitude,
+      popup: `<strong>${selectedUser.name} ${selectedUser.surname}</strong><br />Current Location`,
+      isUserLocation: true,
+    }
+  : hasCoordinates
+    ? {
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lng),
+        popup: `<strong>Selected Location</strong>`,
+        isUserLocation: true,
+      }
+    : null;
 
-  const mapMarkers =
-    view === "users"
-      ? userMarkers
-      : recommendationMode
-        ? recommendationMarkers
-        : activityMarkers;
+  const mapMarkers = recommendationMode
+    ? (userLocationMarker ? [userLocationMarker, ...recommendationMarkers] : recommendationMarkers)
+    : activityMarkers;
 
   const mapLoading =
-    view === "users"
-      ? usersResult.loading
-      : recommendationMode
+      recommendationMode
         ? recommendationsResult.loading
         : activitiesResult.loading;
 
   const mapError =
-    view === "users"
-      ? usersResult.error
-      : recommendationMode
+      recommendationMode
         ? recommendationsResult.error
         : activitiesResult.error;
 
@@ -85,48 +88,34 @@ function App() {
       error={recommendationsResult.error}
     />
   ) : (
-    <ActivitiesPanel data={activitiesResult.data} loading={activitiesResult.loading} error={activitiesResult.error} />
+    <ActivitiesPanel
+      data={activitiesResult.data}
+      loading={activitiesResult.loading}
+      error={activitiesResult.error}
+    />
   );
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-emerald-50 to-emerald-100 p-6 text-slate-900">
+    <main className="min-h-screen bg-gradient-soft p-6 text-foreground">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col gap-3">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Recommended Activities
-          </h1>
+        {/* Top nav */}
+        <header className="mb-10 flex items-center justify-between rounded-full border border-border bg-card/80 px-6 py-3 shadow-card backdrop-blur">
+          <div className="text-xl font-extrabold">
+            <span className="text-gradient-hubby">Hubby</span>
+          </div>
+        </header>
 
-          <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
-            Discover recommended local places, then explore them on a live Leaflet map.
+        {/* Hero */}
+        <div className="mb-8 flex flex-col gap-3 text-center md:text-left">
+          <h1 className="text-5xl font-extrabold tracking-tight md:text-6xl">
+            Discover Local Activities
+          </h1>
+          <p className="text-lg text-muted-foreground md:text-xl">
+            Find great spots and fun activities right in your own neighborhood. Exploring these nearby places helps you enjoy where you live even more.
           </p>
         </div>
 
-        <section className="mb-8 overflow-hidden rounded-4xl border border-white/70 bg-white/80 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-          <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/80 px-5 py-4">
-            <button
-              type="button"
-              onClick={() => setView("activities")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                view === "activities"
-                  ? "bg-emerald-600 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Activities
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("users")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                view === "users"
-                  ? "bg-emerald-600 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Users
-            </button>
-          </div>
-
+        <section className="mb-8 overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
           {view === "activities" && (
             <RecommendationFilters
               userId={userId}
@@ -140,21 +129,30 @@ function App() {
               radiusKm={radiusKm}
               setRadiusKm={setRadiusKm}
               recommendationMode={recommendationMode}
+              users={usersResult.data}
             />
           )}
 
-          <MapPanel view={view} recommendationMode={recommendationMode} markers={mapMarkers} loading={mapLoading} error={mapError} />
+          <MapPanel
+            view={view}
+            recommendationMode={recommendationMode}
+            markers={mapMarkers}
+            loading={mapLoading}
+            error={mapError}
+          />
 
-          {view === "users" ? (
-            <UsersPanel data={usersResult.data} loading={usersResult.loading} error={usersResult.error} />
-          ) : (
-            recommendationPanel
-          )}
+          
+          {recommendationPanel}
+          
         </section>
-        
+
+        <footer className="pb-6 text-center text-xs text-muted-foreground">
+          Built with React, Tailwind, Leaflet & react-infinite-scroll-component.
+        </footer>
       </div>
     </main>
   );
 }
 
-export default App;
+
+export default App
