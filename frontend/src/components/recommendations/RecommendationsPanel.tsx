@@ -81,6 +81,7 @@ export default function RecommendationsPanel({ data, loading, error }: Recommend
                 context={item.context}
                 userRatingCount={item.userRatingCount}
                 workingHours={item.workingHours}
+                phone={item.phoneNumber}
               />
             ))}
           </div>

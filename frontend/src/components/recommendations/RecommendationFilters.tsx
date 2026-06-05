@@ -6,11 +6,6 @@ const CONTEXT_OPTIONS = [
   "dinner",
   "nightlife",
   "culture",
-  "travel",
-  "family",
-  "outdoors",
-  "shopping",
-  "wellness",
 ] as const;
 
 type RecommendationFiltersProps = {

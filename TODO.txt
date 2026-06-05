@@ -1,0 +1,4 @@
+Dve Tehnichki dokumentacii, edna na angliski, druga na makedonski.
+Prezentacija za pred klientot
+Bugfixes so frontend
+Da se izbrishat kontext?

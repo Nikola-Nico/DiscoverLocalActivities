@@ -12,8 +12,6 @@ import {
 } from "./tests/FetchData";
 import type { MapMarker, ViewMode } from "./components/maps/mapTypes";
 
-
-
 function App() {
   const [view, setView] = useState<ViewMode>("activities");
   const [userId, setUserId] = useState("");
@@ -35,51 +33,58 @@ function App() {
 
   const hasUserId = userId.trim().length > 0;
   const hasCoordinates = lat.trim().length > 0 && lng.trim().length > 0;
-  const recommendationMode = view === "activities" && (hasUserId || hasCoordinates);
+  const recommendationMode =
+    view === "activities" && (hasUserId || hasCoordinates);
 
-  const selectedUser = usersResult.data.find((u: any) => u.id?.toString() === userId);
+  const selectedUser = usersResult.data.find(
+    (u: any) => u.id?.toString() === userId,
+  );
 
-  const activityMarkers: MapMarker[] = activitiesResult.data.map((activity) => ({
-    latitude: activity.latitude,
-    longitude: activity.longitude,
-    popup: `<strong>${activity.name}</strong><br />${activity.type}<br />⭐ ${activity.rating ?? "n/a"}`,
-  }));
+  const activityMarkers: MapMarker[] = activitiesResult.data.map(
+    (activity) => ({
+      latitude: activity.latitude,
+      longitude: activity.longitude,
+      popup: `<strong>${activity.name}</strong><br />${activity.type}<br />⭐ ${activity.rating ?? "n/a"}`,
+    }),
+  );
 
-  const recommendationMarkers: MapMarker[] = recommendationsResult.data.map((item) => ({
-    latitude: item.latitude,
-    longitude: item.longitude,
-    popup: `<strong>${item.name}</strong><br />${item.category}<br />⭐ ${item.rating ?? "n/a"}<br />${item.distanceKm.toFixed(2)} km away`,
-  }));
+  const recommendationMarkers: MapMarker[] = recommendationsResult.data.map(
+    (item) => ({
+      latitude: item.latitude,
+      longitude: item.longitude,
+      popup: `<strong>${item.name}</strong><br />${item.category}<br />⭐ ${item.rating ?? "n/a"}<br />${item.distanceKm.toFixed(2)} km away`,
+    }),
+  );
 
   const userLocationMarker: MapMarker | null = selectedUser
-  ? {
-      latitude: selectedUser.latitude,
-      longitude: selectedUser.longitude,
-      popup: `<strong>${selectedUser.name} ${selectedUser.surname}</strong><br />Current Location`,
-      isUserLocation: true,
-    }
-  : hasCoordinates
     ? {
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lng),
-        popup: `<strong>Selected Location</strong>`,
+        latitude: selectedUser.latitude,
+        longitude: selectedUser.longitude,
+        popup: `<strong>${selectedUser.name} ${selectedUser.surname}</strong><br />Current Location`,
         isUserLocation: true,
       }
-    : null;
+    : hasCoordinates
+      ? {
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lng),
+          popup: `<strong>Selected Location</strong>`,
+          isUserLocation: true,
+        }
+      : null;
 
   const mapMarkers = recommendationMode
-    ? (userLocationMarker ? [userLocationMarker, ...recommendationMarkers] : recommendationMarkers)
+    ? userLocationMarker
+      ? [userLocationMarker, ...recommendationMarkers]
+      : recommendationMarkers
     : activityMarkers;
 
-  const mapLoading =
-      recommendationMode
-        ? recommendationsResult.loading
-        : activitiesResult.loading;
+  const mapLoading = recommendationMode
+    ? recommendationsResult.loading
+    : activitiesResult.loading;
 
-  const mapError =
-      recommendationMode
-        ? recommendationsResult.error
-        : activitiesResult.error;
+  const mapError = recommendationMode
+    ? recommendationsResult.error
+    : activitiesResult.error;
 
   const recommendationPanel = recommendationMode ? (
     <RecommendationsPanel
@@ -111,7 +116,9 @@ function App() {
             Discover Local Activities
           </h1>
           <p className="text-lg text-muted-foreground md:text-xl">
-            Find great spots and fun activities right in your own neighborhood. Exploring these nearby places helps you enjoy where you live even more.
+            Find great spots and fun activities right in your own neighborhood.
+            Exploring these nearby places helps you enjoy where you live even
+            more.
           </p>
         </div>
 
@@ -132,18 +139,17 @@ function App() {
               users={usersResult.data}
             />
           )}
+          <div className="relative z-0 isolate">
+            <MapPanel
+              view={view}
+              recommendationMode={recommendationMode}
+              markers={mapMarkers}
+              loading={mapLoading}
+              error={mapError}
+            />
+          </div>
 
-          <MapPanel
-            view={view}
-            recommendationMode={recommendationMode}
-            markers={mapMarkers}
-            loading={mapLoading}
-            error={mapError}
-          />
-
-          
           {recommendationPanel}
-          
         </section>
 
         <footer className="pb-6 text-center text-xs text-muted-foreground">
@@ -154,5 +160,4 @@ function App() {
   );
 }
 
-
-export default App
+export default App;

@@ -128,42 +128,6 @@ CONTEXT_ACTIVITY_TYPES: dict[str, list[str]] = {
         "event_venue",
         "mosque",
     ],
-    "travel": [
-        "hotel",
-        "gas_station",
-        "other",
-    ],
-    "family": [
-        "amusement_park",
-        "playground",
-        "zoo",
-        "movie_theater",
-        "bowling_alley",
-        "museum",
-        "park",
-    ],
-    "outdoors": [
-        "hiking_area",
-        "beach",
-        "botanical_garden",
-        "lake",
-        "park",
-        "tourist_attraction",
-    ],
-    "shopping": [
-        "shopping_mall",
-        "market",
-        "clothing_store",
-        "book_store",
-        "supermarket",
-    ],
-    "wellness": [
-        "spa",
-        "massage",
-        "sauna",
-        "gym",
-        "beauty_salon",
-    ],
 }
 
 CONTEXT_KEYWORDS: dict[str, set[str]] = {

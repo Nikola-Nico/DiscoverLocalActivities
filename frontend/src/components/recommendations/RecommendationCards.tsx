@@ -93,7 +93,9 @@ export default function RecommendationCard({
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-xl font-bold leading-tight text-card-foreground">{name}</h3>
+            <h3 className="text-xl font-bold leading-tight text-card-foreground">
+              {name}
+            </h3>
             <p className="mt-1 text-sm text-muted-foreground">{category}</p>
           </div>
           {typeof isOpen === "boolean" && (
@@ -126,30 +128,28 @@ export default function RecommendationCard({
           {typeof distanceKm === "number" && (
             <p>
               Distance:{" "}
-              <span className="font-semibold text-card-foreground">{distanceKm.toFixed(2)} km</span>
+              <span className="font-semibold text-card-foreground">
+                {distanceKm.toFixed(2)} km
+              </span>
             </p>
           )}
           {typeof recommendationScore === "number" && (
             <p>
               Score:{" "}
               <span className="font-semibold text-card-foreground">
-                {recommendationScore.toFixed(3)}
+                {`${(recommendationScore * 100).toFixed(0)}%`}
               </span>
             </p>
           )}
           {typeof userRatingCount === "number" && (
             <p>
               Ratings:{" "}
-              <span className="font-semibold text-card-foreground">{userRatingCount}</span>
+              <span className="font-semibold text-card-foreground">
+                {userRatingCount}
+              </span>
             </p>
           )}
         </div>
-
-        {recommendationReason && (
-          <p className="mt-4 rounded-2xl bg-secondary px-4 py-3 text-sm text-secondary-foreground">
-            {recommendationReason}
-          </p>
-        )}
 
         <div className="mt-5 flex items-center justify-between gap-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -196,7 +196,14 @@ export default function RecommendationCard({
             <div className="grid gap-6 overflow-y-auto px-6 py-6 lg:grid-cols-[1.2fr_0.8fr]">
               <section className="space-y-5">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <StatBox label="Rating" value={typeof rating === "number" ? `★ ${rating.toFixed(1)}` : "n/a"} />
+                  <StatBox
+                    label="Rating"
+                    value={
+                      typeof rating === "number"
+                        ? `★ ${rating.toFixed(1)}`
+                        : "n/a"
+                    }
+                  />
                   <StatBox
                     label="Status"
                     value={
@@ -208,27 +215,43 @@ export default function RecommendationCard({
                     }
                   />
                   {typeof distanceKm === "number" && (
-                    <StatBox label="Distance" value={`${distanceKm.toFixed(2)} km`} />
+                    <StatBox
+                      label="Distance"
+                      value={`${distanceKm.toFixed(2)} km`}
+                    />
                   )}
                   {typeof recommendationScore === "number" && (
-                    <StatBox label="Score" value={recommendationScore.toFixed(3)} />
+                    <StatBox
+                      label="Score"
+                      value={`${(recommendationScore * 100).toFixed(0)}%`}
+                    />
                   )}
                 </div>
 
-
                 <div className="grid gap-4 sm:grid-cols-2">
                   <InfoBox label="Contact">
-                    <Row label="Rating Count" value={userRatingCount?.toString() ?? "n/a"} />
-                    <Row label="Phone" value={phone?? "n/a"} />
+                    <Row
+                      label="Rating Count"
+                      value={userRatingCount?.toString() ?? "n/a"}
+                    />
+                    <Row label="Phone" value={phone ?? "n/a"} />
                   </InfoBox>
                   <InfoBox label="Location">
                     <Row
                       label="Latitude"
-                      value={typeof latitude === "number" ? latitude.toFixed(5) : "n/a"}
+                      value={
+                        typeof latitude === "number"
+                          ? latitude.toFixed(5)
+                          : "n/a"
+                      }
                     />
                     <Row
                       label="Longitude"
-                      value={typeof longitude === "number" ? longitude.toFixed(5) : "n/a"}
+                      value={
+                        typeof longitude === "number"
+                          ? longitude.toFixed(5)
+                          : "n/a"
+                      }
                     />
                   </InfoBox>
                 </div>
@@ -240,7 +263,9 @@ export default function RecommendationCard({
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       Working hours
                     </p>
-                    <h4 className="mt-1 text-lg font-bold text-card-foreground">Weekly schedule</h4>
+                    <h4 className="mt-1 text-lg font-bold text-card-foreground">
+                      Weekly schedule
+                    </h4>
                   </div>
                   {typeof userRatingCount === "number" && (
                     <div className="rounded-full bg-card px-3 py-1 text-sm font-medium text-card-foreground shadow-card">
@@ -256,17 +281,20 @@ export default function RecommendationCard({
                     </div>
                   ) : (
                     workingHours.map((workingHour) => (
-                      <div key={workingHour.id} className="rounded-2xl bg-card p-4 shadow-card">
+                      <div
+                        key={workingHour.id}
+                        className="rounded-2xl bg-card p-4 shadow-card"
+                      >
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <h5 className="font-semibold text-card-foreground">
                             {formatDayLabel(workingHour.day_of_week)}
                           </h5>
                           <p className="mt-2 text-sm text-muted-foreground">
-                          {workingHour.is_closed
-                            ? "Closed all day"
-                            : workingHour.is_open_24h
-                              ? "Open 24 hours"
-                              : `${formatTime(workingHour.open_time)} - ${formatTime(workingHour.close_time)}`}
+                            {workingHour.is_closed
+                              ? "Closed all day"
+                              : workingHour.is_open_24h
+                                ? "Open 24 hours"
+                                : `${formatTime(workingHour.open_time)} - ${formatTime(workingHour.close_time)}`}
                           </p>
                           <span
                             className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -284,13 +312,14 @@ export default function RecommendationCard({
                                 : "Scheduled"}
                           </span>
                         </div>
-                        
-                        {workingHour.break_hour_start && workingHour.break_hour_end && (
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            Break: {formatTime(workingHour.break_hour_start)} -{" "}
-                            {formatTime(workingHour.break_hour_end)}
-                          </p>
-                        )}
+
+                        {workingHour.break_hour_start &&
+                          workingHour.break_hour_end && (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              Break: {formatTime(workingHour.break_hour_start)}{" "}
+                              - {formatTime(workingHour.break_hour_end)}
+                            </p>
+                          )}
                       </div>
                     ))
                   )}
@@ -310,18 +339,28 @@ function StatBox({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-extrabold text-card-foreground">{value}</p>
+      <p className="mt-2 text-2xl font-extrabold text-card-foreground">
+        {value}
+      </p>
     </div>
   );
 }
 
-function InfoBox({ label, children }: { label: string; children: React.ReactNode }) {
+function InfoBox({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-3xl border border-border p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         {label}
       </p>
-      <dl className="mt-3 space-y-2 text-sm text-muted-foreground">{children}</dl>
+      <dl className="mt-3 space-y-2 text-sm text-muted-foreground">
+        {children}
+      </dl>
     </div>
   );
 }
