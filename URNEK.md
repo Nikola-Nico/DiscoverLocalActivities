@@ -1,24 +1,26 @@
-# Discover Local Activities
+<div style="display: flex; justify-content: space-between; gap: 16px;">
+  <h1>Discover Local Activities</h1>
+  <img src="./public/idovGQseqn_logos.png" alt="Brainster Next" style="max-width: 100px; border-radius:50px;" />
+</div>
 
 ## Техничка документација при примопредавање и deployment
 
 **Институција:** Високообразовна институција Бреинстер Некст (Brainster Next)
-**Студент/и:**
+**Студенти:**
 
-- [Име и Презиме] ([Индекс])
-- [Име и Презиме] ([Индекс])
+- Виктор Стојановски (А24118)
+- Никола Христов (А24108)
 - Никола Чакар (А24111)
-- [Име и Презиме] ([Индекс])
-- [Име и Презиме] ([Индекс])
-  **Насока:** Софтверско Инженерство и Иновации
-  **Клиент:** [Име на клиентот / „Проектот е развиен како функционален прототип“]
-  **Датум:** Јуни 2026
+- Павел Танасковски (А24136)
+- Матеј Талески (A24109)
+
+**Насока:** Софтверско Инженерство и Иновации  
+**Клиент:** [Hubby / „Проектот е развиен како функционален прототип“]  
+**Датум:** Јуни 2026  
+
 
 ---
 
-![Brainster Next](./public/idovGQseqn_logos.png)
-
----
 
 ## Содржина
 
@@ -211,15 +213,69 @@ npm i react-infinite-scroll-component
 
 ## 6. Конфигурација на околината
 
-[ Овде објаснете ги променливите на околината (.env) кои се клучни за работа. Наведете ги портите и објаснете ја намената на специфичните конфигурации за да се избегнат конфликти. ]
-[ Ставете ја postgresql env или кој било .env што го имаме]
+**PostgreSQL Environment Variables**
+Кога се стартува PostgreSQL преку Docker, се користат следните
+environment variables за конфигурација на базата:
+
+  * **POSTGRES_USER**
+    * Го дефинира корисничкото име со кое апликацијата се поврзува на базата на податоци.
+    * Пример вредност: POSTGRES_USER: example_user
+
+  * **POSTGRES_PASSWORD**
+    * Ја дефинира лозинката за автентикација на POSTGRES_USER.
+    * Пример вредност: POSTGRES_PASSWORD: example_password
+  
+  * **POSTGRES_DB**
+    * Го дефинира името на базата на податоци која автоматски се креира при прв старт на контејнерот.
+    * Пример вредност: POSTGRES_DB: example_db_name
+
+  **Database URL**
+  Во фајлот app/.env.example се дефинира DATABASE_URL — каде со dot-env се вчитува варијаблата и SQLAlchemy се поврзува на базата.  
+  Форматот е:
+  * postgresql://USER:PASSWORD@HOST:PORT/DB
+
+  Во локална развојна средина тоа изгледа вака:
+  * **DATABASE_URL=postgresql://discover_user:discover_password@localhost:5432/discover_local_activities**
+
+
+  ### 6.1 Localhost Порти
+  Проектот користи три различни сервиси, секој на свој порт:
+  * localhost:8000  —  Backend (FastAPI)
+    * Го опслужува REST API на апликацијата.
+    * Тука се праќаат HTTP барања (GET, POST, PUT, DELETE).
+    * Стартува со: uvicorn main:app --reload
+  
+  * localhost:5173  —  Frontend (Vite / React)
+    * Го опслужува корисничкиот интерфејс во прелистувачот.
+    * Vite dev server автоматски проксира API барањата
+    * кон Backend-от на порт 8000.
+
+  * localhost:5432  —  PostgreSQL
+    * Стандарден порт за PostgreSQL база на податоци.
+    * Backend-от се поврзува на овој порт преку DATABASE_URL.
+
+  ### 6.2 Docker Compose — PostgreSQL Environment Конфигурација
+  Во фајлот compose.yaml, под сервисот за базата на податоци,
+  environment variables се поставуваат вака:
+  * environment:
+    * POSTGRES_USER: discover_user
+    * POSTGRES_PASSWORD: discover_password
+    * POSTGRES_DB: discover_local_activities
+
 
 ## 7. AI компоненти и алатки
 
-[ Наведете ги алатките, моделите или сервисите базирани на вештачка интелигенција кои се користени во самиот код, или објаснете како AI ви помогна при развојот. ]
+За развој на проектот беа користени следните AI алатки:
 
-- AI во самата апликација (Runtime): [На пр. Интегриран OpenAI API за AI-чет асистент или оптимизација на логика.]
-- AI при развој (Development): [На пр. GitHub Copilot, ChatGPT за генерирање тест податоци и преглед на код. Наведете кои делови беа рачно проверени и ревидирани.]
+* Claude (Anthropic)
+  * Користен за генерирање на код, документација, дебагирање и архитектурни одлуки
+
+* Gemini (Google)
+  * Користен за дополнителна помош при развој и истражување на решенија.
+
+* GitHub Copilot (Microsoft / OpenAI)
+  * Користен директно во едиторот (VS Code) за автокомплетирање на код и inline предлози.
+
 
 ## 8. Прирачник за користење и функционалности
 
