@@ -87,6 +87,7 @@
   --gradient-hubby: linear-gradient(135deg, oklch(0.9 0.13 75) 0%, oklch(0.78 0.18 45) 55%, oklch(0.7 0.21 20) 100%);
   --gradient-soft: linear-gradient(180deg, oklch(0.99 0.02 80) 0%, oklch(0.96 0.05 60) 100%);
   --gradient-pill: linear-gradient(135deg, oklch(0.85 0.16 65), oklch(0.72 0.2 30));
+  --gradient-lime: linear-gradient(135deg, oklch(0.88 0.18 130), oklch(0.60 0.25 160));
   --shadow-card: 0 12px 40px -16px oklch(0.6 0.15 40 / 0.22);
   --shadow-pill: 0 8px 22px -8px oklch(0.7 0.2 35 / 0.45);
 }
@@ -107,6 +108,8 @@
   .bg-gradient-hubby { background: var(--gradient-hubby); }
   .bg-gradient-soft { background: var(--gradient-soft); }
   .bg-gradient-pill { background: var(--gradient-pill); }
+  .bg-gradient-lime { background: var(--gradient-lime); }
+
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-pill { box-shadow: var(--shadow-pill); }
   .text-gradient-hubby {

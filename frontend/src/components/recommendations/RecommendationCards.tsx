@@ -102,7 +102,7 @@ export default function RecommendationCard({
             <span
               className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
                 isOpen
-                  ? "bg-gradient-pill text-primary-foreground shadow-pill"
+                  ? "bg-gradient-lime text-primary-foreground shadow-pill"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
