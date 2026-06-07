@@ -4,7 +4,6 @@ import ActivitiesPanel from "./components/ActivitiesPanel";
 import MapPanel from "./components/maps/MapPanel";
 import RecommendationFilters from "./components/recommendations/RecommendationFilters";
 import RecommendationsPanel from "./components/recommendations/RecommendationsPanel";
-import UsersPanel from "./components/UsersPanel";
 import {
   useFetchActivities,
   useFetchUsers,
@@ -15,7 +14,6 @@ import type { MapMarker, ViewMode } from "./components/maps/mapTypes";
 function App() {
   const [view, setView] = useState<ViewMode>("activities");
   const [userId, setUserId] = useState("");
-  const [userFullName, setUserFullName] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [context, setContext] = useState("");
