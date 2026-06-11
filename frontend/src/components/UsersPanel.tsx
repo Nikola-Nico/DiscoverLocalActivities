@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import type { useFetchUsers } from "../tests/FetchData";
+import type { useFetchUsers } from "../data/FetchData";
 
 const PAGE_SIZE = 12;
 

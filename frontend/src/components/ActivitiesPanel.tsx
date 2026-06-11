@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import RecommendationCard from "./recommendations/RecommendationCards";
-import type { useFetchActivities } from "../tests/FetchData";
+import type { useFetchActivities } from "../data/FetchData";
 
 const PAGE_SIZE = 12;
 

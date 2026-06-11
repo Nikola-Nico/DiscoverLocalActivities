@@ -8,7 +8,7 @@ import {
   useFetchActivities,
   useFetchUsers,
   useRecommendations,
-} from "./tests/FetchData";
+} from "./data/FetchData";
 import type { MapMarker, ViewMode } from "./components/maps/mapTypes";
 
 function App() {

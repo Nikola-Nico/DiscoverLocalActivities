@@ -1,3 +1,5 @@
+import React from "react";
+
 const CONTEXT_OPTIONS = [
   "general",
   "breakfast",
@@ -42,6 +44,35 @@ export default function RecommendationFilters({
   recommendationMode,
   users,
 }: RecommendationFiltersProps) {
+  
+  // 1. Handle User Selection
+  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = event.target.value;
+    setUserId(selectedId);
+
+    // If a valid user is selected, auto-fill their coordinates
+    if (selectedId) {
+      const selectedUser = users.find((u) => u.id?.toString() === selectedId);
+      if (selectedUser) {
+        setLat(selectedUser.latitude.toString());
+        setLng(selectedUser.longitude.toString());
+      }
+    }
+  };
+
+  // 2. Handle Coordinate Changes manually
+  const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLat(event.target.value);
+    // Unselect the user if the coordinates are manually changed
+    if (userId !== "") setUserId("");
+  };
+
+  const handleLngChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLng(event.target.value);
+    // Unselect the user if the coordinates are manually changed
+    if (userId !== "") setUserId("");
+  };
+
   return (
     <div className="border-b border-border px-6 py-5">
       <div className="mb-4 grid gap-4 md:grid-cols-5">
@@ -49,7 +80,7 @@ export default function RecommendationFilters({
           User
           <select
             value={userId}
-            onChange={(event) => setUserId(event.target.value)}
+            onChange={handleUserChange}
             className={fieldInput}
           >
             <option value="">Select a user</option>
@@ -66,7 +97,7 @@ export default function RecommendationFilters({
             type="number"
             step="any"
             value={lat}
-            onChange={(event) => setLat(event.target.value)}
+            onChange={handleLatChange}
             placeholder="45.815"
             className={fieldInput}
           />
@@ -77,7 +108,7 @@ export default function RecommendationFilters({
             type="number"
             step="any"
             value={lng}
-            onChange={(event) => setLng(event.target.value)}
+            onChange={handleLngChange}
             placeholder="15.981"
             className={fieldInput}
           />
