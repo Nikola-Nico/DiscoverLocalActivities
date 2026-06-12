@@ -14,4 +14,5 @@ export default function MapPlaceholder({ text, error = false }: MapPlaceholderPr
       {text}
     </div>
   );
+
 }

@@ -7,6 +7,7 @@ type MapPanelProps = {
   markers: MapMarker[];
   loading: boolean;
   error: Error | null;
+  userId: string,
 };
 
 export default function MapPanel({
@@ -15,6 +16,7 @@ export default function MapPanel({
   markers,
   loading,
   error,
+  userId,
 }: MapPanelProps) {
   const title =
     view === "users"
@@ -34,7 +36,7 @@ export default function MapPanel({
       <h2 className="text-xl font-bold text-foreground">{title}</h2>
       <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       <div className="mt-4 overflow-hidden rounded-3xl border border-border bg-muted shadow-card">
-        <MapView markers={markers} loading={loading} error={error} />
+        <MapView markers={markers} loading={loading} error={error} userId={userId}/>
       </div>
     </div>
   );

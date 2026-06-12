@@ -144,6 +144,7 @@ function App() {
               markers={mapMarkers}
               loading={mapLoading}
               error={mapError}
+              userId={userId}
             />
           </div>
 

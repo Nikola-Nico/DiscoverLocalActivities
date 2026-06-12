@@ -5,4 +5,5 @@ export type MapMarker = {
   longitude: number;
   popup: string;
   isUserLocation?: boolean;
+  userId?: string;
 };
